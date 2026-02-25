@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIMHANS · EEG Cohort Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d2137; --navy-mid:#112a47; --navy-light:#163656;
+  --panel:#f4f7fb; --panel2:#eaf0f8; --border:#cdd9e8;
+  --teal:#007a7c; --teal-light:#009b9e;
+  --c160:#2d6a4f; --c160a:rgba(45,106,79,0.82);   /* Healthy Control - green */
+  --c150:#1a6fa8; --c150a:rgba(26,111,168,0.82);   /* Schizophrenia - blue */
+  --c140:#0e7490; --c140a:rgba(14,116,144,0.82);   /* OCD - cyan */
+  --c130:#b45309; --c130a:rgba(180,83,9,0.82);     /* Dementia - amber */
+  --c120:#6d28d9; --c120a:rgba(109,40,217,0.82);   /* BPAD - violet */
+  --c110:#be185d; --c110a:rgba(190,24,93,0.82);    /* SUD - pink */
+  --cunk:#4b6070; --cUnkA:rgba(75,96,112,0.6);
+  --male:#1a6fa8; --male-a:rgba(26,111,168,0.82); --male-l:#d0e8f8;
+  --female:#b5446e; --female-a:rgba(181,68,110,0.82); --female-l:#fce7f3;
+  --unk:#4b6070; --unk-a:rgba(75,96,112,0.6);
+  --text:#1a2b3c; --text-mid:#3d566e; --text-muted:#6b8299;
+  --shadow:0 2px 12px rgba(13,33,55,0.10); --shadow-lg:0 8px 32px rgba(13,33,55,0.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:14px;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--panel);color:var(--text);min-height:100vh;
+  background-image:linear-gradient(rgba(13,33,55,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(13,33,55,0.05) 1px,transparent 1px);
+  background-size:32px 32px;}
+
+/* HEADER */
+header{background:var(--navy);color:#fff;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-lg);}
+.hdr-left{display:flex;align-items:center;gap:14px;}
+.hdr-logo{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,var(--teal-light),#005f6b);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:#fff;letter-spacing:1px;}
+.hdr-title{font-size:16px;font-weight:600;color:#e8f0f8;letter-spacing:-0.2px;}
+.hdr-sub{font-size:11px;color:#7fa8c8;font-family:'IBM Plex Mono',monospace;margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:12px;}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:4px;font-size:11px;font-family:'IBM Plex Mono',monospace;}
+.badge.live{background:rgba(0,155,158,0.25);color:#5de0e3;border:1px solid rgba(93,224,227,0.3);}
+.badge.neutral{background:rgba(255,255,255,0.08);color:#7fa8c8;border:1px solid rgba(255,255,255,0.12);}
+.pulse{width:6px;height:6px;border-radius:50%;background:#5de0e3;animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+#last-updated{font-size:11px;color:#5a7a96;font-family:'IBM Plex Mono',monospace;}
+
+/* UPLOAD ZONE */
+#upload-section{max-width:640px;margin:60px auto;padding:0 32px;}
+.upload-card{background:#fff;border:2px dashed var(--border);border-radius:12px;padding:48px 40px;text-align:center;transition:all .2s;cursor:pointer;}
+.upload-card:hover,.upload-card.dragover{border-color:var(--teal);background:rgba(0,122,124,0.04);}
+.upload-icon{font-size:48px;margin-bottom:16px;}
+.upload-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;}
+.upload-sub{font-size:13px;color:var(--text-muted);margin-bottom:24px;line-height:1.6;}
+.upload-btn{display:inline-block;padding:10px 24px;border-radius:6px;background:var(--navy);color:#fff;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s;border:none;font-family:'IBM Plex Sans',sans-serif;}
+.upload-btn:hover{background:var(--navy-light);}
+#file-input{display:none;}
+.upload-formats{margin-top:16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);}
+.upload-error{margin-top:12px;padding:10px 16px;border-radius:6px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;font-size:13px;display:none;}
+
+/* DX KEY LEGEND */
+.dx-key{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;justify-content:center;}
+.dx-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-family:'IBM Plex Mono',monospace;border:1px solid;font-weight:500;}
+
+/* COLUMN MAPPER */
+#mapper-section{display:none;max-width:720px;margin:40px auto;padding:0 32px;}
+.mapper-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px 32px;box-shadow:var(--shadow);}
+.mapper-title{font-size:16px;font-weight:600;margin-bottom:6px;}
+.mapper-sub{font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.6;}
+.info-box{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--text-mid);font-family:'IBM Plex Mono',monospace;line-height:1.8;}
+.info-box strong{color:var(--teal);}
+.mapper-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.mapper-row{display:flex;flex-direction:column;gap:4px;}
+.mapper-label{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;}
+.mapper-select{padding:7px 10px;border-radius:5px;border:1px solid var(--border);font-size:13px;font-family:'IBM Plex Sans',sans-serif;color:var(--text);background:#fff;outline:none;width:100%;}
+.mapper-select:focus{border-color:var(--teal);}
+.mapper-confirm{padding:10px 28px;border-radius:6px;background:var(--teal);color:#fff;border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+.mapper-confirm:hover{background:var(--teal-light);}
+.preview-table-wrap{overflow-x:auto;margin-bottom:20px;border:1px solid var(--border);border-radius:6px;max-height:180px;overflow-y:auto;}
+.preview-table{width:100%;border-collapse:collapse;font-size:12px;}
+.preview-table th{background:var(--panel2);padding:7px 10px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.5px;border-bottom:1px solid var(--border);position:sticky;top:0;}
+.preview-table td{padding:7px 10px;border-bottom:1px solid var(--panel2);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-mid);}
+
+/* DASHBOARD */
+#dashboard{display:none;}
+
+/* FILTERS */
+.filters{background:#fff;border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:0 1px 4px rgba(13,33,55,0.06);}
+.flabel{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
+.fsep{width:1px;height:24px;background:var(--border);margin:0 4px;}
+.fbtn{padding:5px 12px;border-radius:4px;border:1px solid var(--border);background:#fff;color:var(--text-mid);cursor:pointer;font-size:12px;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .15s;}
+.fbtn:hover{border-color:var(--teal);color:var(--teal);}
+.fbtn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+.fbtn.f160.active{background:var(--c160);border-color:var(--c160);color:#fff;}
+.fbtn.f150.active{background:var(--c150);border-color:var(--c150);color:#fff;}
+.fbtn.f140.active{background:var(--c140);border-color:var(--c140);color:#fff;}
+.fbtn.f130.active{background:var(--c130);border-color:var(--c130);color:#fff;}
+.fbtn.f120.active{background:var(--c120);border-color:var(--c120);color:#fff;}
+.fbtn.f110.active{background:var(--c110);border-color:var(--c110);color:#fff;}
+select.fsel{padding:5px 10px;border-radius:4px;border:1px solid var(--border);background:#fff;color:var(--text-mid);font-size:12px;font-family:'IBM Plex Sans',sans-serif;outline:none;cursor:pointer;}
+
+/* STATS */
+.stats-strip{display:grid;grid-template-columns:repeat(6,1fr);background:var(--border);border-bottom:1px solid var(--border);}
+.sc{background:#fff;padding:18px 22px;border-right:1px solid var(--border);}
+.sc:last-child{border-right:none;}
+.sc.clickable{cursor:pointer;}
+.sc.clickable:hover{background:var(--panel2);}
+.st{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;}
+.sv{font-size:26px;font-weight:600;line-height:1;letter-spacing:-.5px;}
+.sv.ct{color:var(--teal);}.sv.cs{color:var(--c150);}.sv.cd{color:var(--c130);}.sv.cb{color:var(--c120);}.sv.cf{color:var(--female);}.sv.cm{color:var(--text-muted);}
+.sn{font-size:11px;color:var(--text-muted);margin-top:4px;}
+
+/* SECTION LABELS */
+.slabel{padding:16px 32px 0;font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* CHART GRID */
+.grid{display:grid;gap:16px;padding:12px 32px;}
+.g-2-1{grid-template-columns:2fr 1fr;}
+.g-3{grid-template-columns:1fr 1fr 1fr;}
+.g-1{grid-template-columns:1fr;}
+.card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px 22px;box-shadow:var(--shadow);}
+.card-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--panel2);}
+.card-title{font-size:13px;font-weight:600;color:var(--text);}
+.card-hint{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);margin-top:3px;}
+.card-tag{font-size:9px;font-family:'IBM Plex Mono',monospace;padding:2px 7px;border-radius:3px;background:var(--panel2);color:var(--text-muted);border:1px solid var(--border);white-space:nowrap;}
+canvas{max-height:260px;width:100%!important;}
+
+/* MODAL */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(13,33,55,0.55);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;}
+.moverlay.open{display:flex;}
+.modal{background:#fff;border-radius:10px;border:1px solid var(--border);padding:28px 30px;width:92%;max-width:700px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--panel2);}
+.mtitle{font-size:16px;font-weight:600;color:var(--text);}
+.mclose{background:none;border:1px solid var(--border);color:var(--text-mid);padding:5px 12px;border-radius:4px;cursor:pointer;font-size:12px;}
+.mclose:hover{border-color:var(--teal);color:var(--teal);}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.kpi{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:14px 16px;}
+.kv{font-size:22px;font-weight:600;letter-spacing:-.5px;}
+.kl{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);margin-top:3px;}
+.dl{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;margin-top:16px;}
+.dxrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--panel2);font-size:13px;}
+.dxrow:last-child{border-bottom:none;}
+.dxname{font-weight:500;display:flex;align-items:center;gap:8px;}
+.dxdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dxright{display:flex;align-items:center;gap:10px;}
+.dxbw{width:80px;height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;}
+.dxbf{height:100%;border-radius:3px;}
+.dxcount{font-family:'IBM Plex Mono',monospace;font-weight:500;}
+.dxpct{font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;}
+.ptable{width:100%;border-collapse:collapse;font-size:13px;}
+.ptable th{text-align:left;padding:7px 10px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid var(--border);}
+.ptable td{padding:9px 10px;border-bottom:1px solid var(--panel2);}
+.ptable tr:hover td{background:var(--panel);}
+.chip{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:500;}
+.chip.m{background:var(--male-l);color:var(--male);}.chip.f{background:var(--female-l);color:var(--female);}
+
+/* UPLOAD FOOTER */
+#upload-footer{background:#fff;border-top:1px solid var(--border);padding:16px 32px;display:none;align-items:center;gap:16px;flex-wrap:wrap;}
+.uf-label{font-size:12px;color:var(--text-muted);}
+.uf-btn{padding:7px 18px;border-radius:5px;border:1px solid var(--border);background:#fff;color:var(--text-mid);cursor:pointer;font-size:12px;font-family:'IBM Plex Sans',sans-serif;transition:all .15s;}
+.uf-btn:hover{border-color:var(--teal);color:var(--teal);}
+.uf-filename{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--teal);background:#e0f4f4;padding:3px 10px;border-radius:3px;}
+#file-input2{display:none;}
+
+footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;border-top:1px solid var(--border);margin-top:8px;}
+
+@media(max-width:900px){
+  .stats-strip{grid-template-columns:repeat(3,1fr);}
+  .grid.g-2-1,.grid.g-3{grid-template-columns:1fr;}
+  .mapper-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-left">
+    <div class="hdr-logo">NI</div>
+    <div>
+      <div class="hdr-title">NIMHANS — EEG Cohort Dashboard</div>
+      <div class="hdr-sub">Department of Neurophysiology · Research EEG · Clinical EEG · PSG · 6 Cohorts</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="badge" id="status-badge" style="display:none"></span>
+    <span class="badge neutral" id="rec-badge" style="display:none">— records</span>
+    <span id="last-updated" style="display:none"></span>
+  </div>
+</header>
+
+<!-- ═══ UPLOAD ═══ -->
+<div id="upload-section">
+  <div class="upload-card" id="drop-zone">
+    <div class="upload-icon">📊</div>
+    <div class="upload-title">Upload Your Cohort Data</div>
+    <div class="upload-sub">
+      Drop your Excel or CSV file here, or click to browse.<br>
+      Diagnosis is automatically extracted from digits 4–6 of the Assessment Number.<br>
+      Your data never leaves your browser.
+    </div>
+    <label class="upload-btn" for="file-input">Choose File</label>
+    <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.tsv">
+    <div class="upload-formats">Supported: .xlsx · .xls · .csv · .tsv</div>
+
+    <!-- Diagnosis key -->
+    <div class="dx-key">
+      <span class="dx-pill" style="background:rgba(45,106,79,0.1);color:#2d6a4f;border-color:#2d6a4f">● 160 — Healthy Control</span>
+      <span class="dx-pill" style="background:rgba(26,111,168,0.1);color:#1a6fa8;border-color:#1a6fa8">● 150 — Schizophrenia</span>
+      <span class="dx-pill" style="background:rgba(14,116,144,0.1);color:#0e7490;border-color:#0e7490">● 140 — OCD</span>
+      <span class="dx-pill" style="background:rgba(180,83,9,0.1);color:#b45309;border-color:#b45309">● 130 — Dementia</span>
+      <span class="dx-pill" style="background:rgba(109,40,217,0.1);color:#6d28d9;border-color:#6d28d9">● 120 — BPAD</span>
+      <span class="dx-pill" style="background:rgba(190,24,93,0.1);color:#be185d;border-color:#be185d">● 110 — SUD</span>
+    </div>
+
+    <div class="upload-error" id="upload-error"></div>
+  </div>
+</div>
+
+<!-- ═══ MAPPER ═══ -->
+<div id="mapper-section">
+  <div class="mapper-card">
+    <div class="mapper-title">Map Your Column Names</div>
+    <div class="mapper-sub">Match your spreadsheet columns to the fields below. Diagnosis will be auto-extracted from digits 4–6 of the Assessment Number — no separate diagnosis column needed.</div>
+    <div class="info-box">
+      Assessment No structure: &nbsp;<strong>XXX</strong> YYY ZZZ<br>
+      &nbsp;&nbsp;Digits 1–3 (<strong>XXX</strong>) = Phase &nbsp;|&nbsp; Digits 4–6 (<strong>YYY</strong>) = Diagnosis &nbsp;|&nbsp; Digits 7–9 (<strong>ZZZ</strong>) = Participant ID<br>
+      Example: <strong>101 150 001</strong> → Phase 1 · Schizophrenia · Participant 001
+    </div>
+    <div class="preview-table-wrap" id="preview-wrap"></div>
+    <div class="mapper-grid" id="mapper-grid"></div>
+    <button class="mapper-confirm" onclick="confirmMapping()">Build Dashboard →</button>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="dashboard">
+  <div class="filters">
+    <span class="flabel">Diagnosis</span>
+    <button class="fbtn active" data-f="dx" data-v="all">All</button>
+    <button class="fbtn f160" data-f="dx" data-v="160">Healthy Control</button>
+    <button class="fbtn f150" data-f="dx" data-v="150">Schizophrenia</button>
+    <button class="fbtn f140" data-f="dx" data-v="140">OCD</button>
+    <button class="fbtn f130" data-f="dx" data-v="130">Dementia</button>
+    <button class="fbtn f120" data-f="dx" data-v="120">BPAD</button>
+    <button class="fbtn f110" data-f="dx" data-v="110">SUD</button>
+    <div class="fsep"></div>
+    <span class="flabel">Phase</span>
+    <button class="fbtn active" data-f="phase" data-v="all">All</button>
+    <button class="fbtn" data-f="phase" data-v="1">Phase 1</button>
+    <button class="fbtn" data-f="phase" data-v="2">Phase 2</button>
+    <button class="fbtn" data-f="phase" data-v="3">Phase 3</button>
+    <button class="fbtn" data-f="phase" data-v="4">Phase 4</button>
+    <div class="fsep"></div>
+    <span class="flabel">Year</span>
+    <select class="fsel" id="yr-sel"><option value="all">All Years</option></select>
+    <div class="fsep"></div>
+    <span class="flabel">Sex</span>
+    <button class="fbtn active" data-f="sex" data-v="all">All</button>
+    <button class="fbtn" data-f="sex" data-v="M">Male</button>
+    <button class="fbtn" data-f="sex" data-v="F">Female</button>
+  </div>
+
+  <div class="stats-strip">
+    <div class="sc"><div class="st">Unique Participants</div><div class="sv ct" id="s-uniq">—</div><div class="sn">After deduplication</div></div>
+    <div class="sc"><div class="st">Total Assessments</div><div class="sv cs" id="s-total">—</div><div class="sn">Including repeat visits</div></div>
+    <div class="sc clickable" onclick="drillSex()"><div class="st">Sex (M / F) ↗</div><div class="sv cd" id="s-sex">—</div><div class="sn">Click to explore</div></div>
+    <div class="sc"><div class="st">Median Age</div><div class="sv cb" id="s-age">—</div><div class="sn">Unique participants</div></div>
+    <div class="sc"><div class="st">Excluded (HC &gt;61 cm)</div><div class="sv cf" id="s-excl">—</div><div class="sn">Head circumference</div></div>
+    <div class="sc"><div class="st">Multi-visit</div><div class="sv cm" id="s-multi">—</div><div class="sn">Attended &gt;1 phase</div></div>
+  </div>
+
+  <div class="slabel">PARTICIPANT DEMOGRAPHICS</div>
+  <div class="grid g-2-1">
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">Age Distribution — Unique Participants</div><div class="card-hint">Stacked by sex · Click any bar to drill into diagnosis breakdown</div></div>
+        <span class="card-tag">UNIQUE</span>
+      </div>
+      <canvas id="cAge"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div><div class="card-title">Sex Distribution</div></div><span class="card-tag">UNIQUE</span></div>
+      <canvas id="cSex"></canvas>
+    </div>
+  </div>
+
+  <div class="slabel" style="margin-top:8px">DIAGNOSIS BREAKDOWN</div>
+  <div class="grid g-2-1">
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">Diagnosis by Phase</div><div class="card-hint">All assessments · stacked · extracted from digits 4–6 of assessment number</div></div>
+        <span class="card-tag">ALL VISITS</span>
+      </div>
+      <canvas id="cPhase"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div><div class="card-title">Diagnosis Split</div><div class="card-hint">Unique participants only</div></div><span class="card-tag">UNIQUE</span></div>
+      <canvas id="cDx"></canvas>
+    </div>
+  </div>
+
+  <!-- Diagnosis counts row -->
+  <div class="slabel" style="margin-top:8px">DIAGNOSIS COUNTS</div>
+  <div class="grid g-3">
+    <div class="card" id="dx-count-card" style="grid-column:span 3">
+      <div class="card-hdr">
+        <div><div class="card-title">Participant Count per Diagnosis</div><div class="card-hint">Unique participants · hover for percentage</div></div>
+        <span class="card-tag">UNIQUE</span>
+      </div>
+      <canvas id="cDxBar" style="max-height:200px"></canvas>
+    </div>
+  </div>
+
+  <div class="slabel" style="margin-top:8px">CAP SIZE &amp; HEAD CIRCUMFERENCE</div>
+  <div class="grid g-1">
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">Head Circumference — Cap Usage Frequency</div><div class="card-hint">Repeat visits retained · HC &gt;61 cm globally excluded</div></div>
+        <span class="card-tag">ALL VISITS</span>
+      </div>
+      <canvas id="cCap" style="max-height:220px"></canvas>
+    </div>
+  </div>
+
+  <div class="slabel" style="margin-top:8px">SEASONAL TRENDS (2017 – PRESENT)</div>
+  <div class="grid g-1">
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">Monthly Patient Volume by Diagnosis</div><div class="card-hint">Which diagnosis peaks in winter? Hover for group counts + season</div></div>
+        <span class="card-tag">ALL ASSESSMENTS</span>
+      </div>
+      <canvas id="cSeasonal" style="max-height:300px"></canvas>
+    </div>
+  </div>
+
+  <div class="slabel" style="margin-top:8px">AGE-MATCHED ANALYSIS</div>
+  <div class="grid g-1">
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">Age-Matched Male vs Female — Population Pyramid</div><div class="card-hint">Unique participants · Click a bar to drill into clinical indications</div></div>
+        <span class="card-tag">UNIQUE</span>
+      </div>
+      <canvas id="cPyramid" style="max-height:300px"></canvas>
+    </div>
+  </div>
+</div>
+
+<div id="upload-footer">
+  <span class="uf-label">Currently loaded:</span>
+  <span class="uf-filename" id="uf-name">—</span>
+  <label class="uf-btn" for="file-input2">↑ Load a different file</label>
+  <input type="file" id="file-input2" accept=".xlsx,.xls,.csv,.tsv">
+</div>
+
+<footer>NIMHANS · Department of Neurophysiology · All processing is local — no data is sent to any server</footer>
+
+<div class="moverlay" id="modal">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle" id="mtitle">Detail</div><button class="mclose" onclick="closeModal()">✕ Close</button></div>
+    <div id="mbody"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   DIAGNOSIS MAP — extracted from digits 4-6
+══════════════════════════════════════════ */
+const DX_INFO = {
+  '160': { name:'Healthy Control', color:'#2d6a4f', colorA:'rgba(45,106,79,0.82)',  light:'rgba(45,106,79,0.12)' },
+  '150': { name:'Schizophrenia',   color:'#1a6fa8', colorA:'rgba(26,111,168,0.82)', light:'rgba(26,111,168,0.12)' },
+  '140': { name:'OCD',             color:'#0e7490', colorA:'rgba(14,116,144,0.82)', light:'rgba(14,116,144,0.12)' },
+  '130': { name:'Dementia',        color:'#b45309', colorA:'rgba(180,83,9,0.82)',   light:'rgba(180,83,9,0.12)' },
+  '120': { name:'BPAD',            color:'#6d28d9', colorA:'rgba(109,40,217,0.82)', light:'rgba(109,40,217,0.12)' },
+  '110': { name:'SUD',             color:'#be185d', colorA:'rgba(190,24,93,0.82)',  light:'rgba(190,24,93,0.12)' },
+  'UNK': { name:'Unknown',         color:'#4b6070', colorA:'rgba(75,96,112,0.6)',   light:'rgba(75,96,112,0.1)' },
+};
+const DX_ORDER = ['160','150','140','130','120','110','UNK'];
+
+function getDxFromAssessment(aNo) {
+  const s = String(aNo || '').trim().replace(/\s/g, '');
+  if (s.length >= 6) {
+    const code = s.substring(3, 6);
+    if (DX_INFO[code]) return code;
+  }
+  return 'UNK';
+}
+
+function getPhase(aNo) {
+  const s = String(aNo || '').trim().replace(/\s/g, '');
+  const p = s.substring(0, 3);
+  if (['101','102'].includes(p)) return 1;
+  if (['111','112'].includes(p)) return 2;
+  if (['121','122'].includes(p)) return 3;
+  if (['131','132'].includes(p)) return 4;
+  return null;
+}
+
+function getPid(aNo, adbs) {
+  const s = String(aNo || '').trim().replace(/\s/g, '');
+  // last 6 digits (digits 4-9 or 7-9 depending on format)
+  if (s.length >= 9) return s.substring(6); // last 3 digits as unique within dx group
+  if (s.length >= 6) return s.substring(3);
+  return String(adbs || s).trim();
+}
+
+/* For uniqueness we use the full last-6-digits of assessment_no (the participant identifier part) */
+function getFullPid(aNo, adbs) {
+  const s = String(aNo || '').trim().replace(/\s/g, '');
+  if (s.length >= 9) return s.substring(3); // digits 4-9 = diagnosis(3) + participant(3) — but truly unique is the adbs_no
+  return String(adbs || aNo || '').trim();
+}
+
+/* ══════════════════════════════════════════
+   STATE & CONFIG
+══════════════════════════════════════════ */
+let rawData = [], charts = {}, colMap = {}, uploadedFilename = '';
+let AF = { dx:'all', phase:'all', year:'all', sex:'all' };
+
+const FIELDS = [
+  { key:'assessment_no', label:'Assessment No (9-digit)*', auto:['assessment_no','assessment_id','assessmentno','assess_no','assessment number'] },
+  { key:'adbs_no',       label:'ADBS / Participant ID',    auto:['adbs_no','adbs','participant_id','pid','id'] },
+  { key:'sex',           label:'Sex*',                     auto:['sex','gender'] },
+  { key:'age',           label:'Age*',                     auto:['age'] },
+  { key:'head_circ',     label:'Head Circumference (cm)',  auto:['head_circumference','head_circ','hc','headcirc','head circumference'] },
+  { key:'date',          label:'Visit Date (optional)',     auto:['date','visit_date','assessment_date','date_of_assessment'] },
+  { key:'col_128',       label:'Column "128" (1=yes/0=no)',auto:['128'] },
+];
+
+/* ══════════════════════════════════════════
+   FILE HANDLING
+══════════════════════════════════════════ */
+function handleFile(file) {
+  if (!file) return;
+  uploadedFilename = file.name;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
+  if (['xlsx','xls'].includes(ext)) {
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type:'binary', cellDates:true });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval:'' });
+        showMapper(rows);
+      } catch(err) { showUploadError('Could not read Excel file: ' + err.message); }
+    };
+    reader.readAsBinaryString(file);
+  } else {
+    reader.onload = e => {
+      const result = Papa.parse(e.target.result, { header:true, skipEmptyLines:true });
+      if (result.errors.length && !result.data.length) { showUploadError('CSV parse error: ' + result.errors[0].message); return; }
+      showMapper(result.data);
+    };
+    reader.readAsText(file);
+  }
+}
+
+function showUploadError(msg) {
+  const el = document.getElementById('upload-error');
+  el.style.display = 'block'; el.textContent = msg;
+}
+
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
+document.getElementById('file-input2').addEventListener('change', e => handleFile(e.target.files[0]));
+
+/* ══════════════════════════════════════════
+   COLUMN MAPPER
+══════════════════════════════════════════ */
+let parsedRows = [];
+function showMapper(rows) {
+  parsedRows = rows;
+  const columns = Object.keys(rows[0] || {});
+  const detected = {};
+  FIELDS.forEach(f => {
+    const match = f.auto.find(a => columns.find(c => c.trim().toLowerCase() === a));
+    detected[f.key] = match ? columns.find(c => c.trim().toLowerCase() === match) : '';
+  });
+
+  // Preview
+  const previewRows = rows.slice(0, 5);
+  let th = columns.map(c => `<th>${c}</th>`).join('');
+  let trs = previewRows.map(r => `<tr>${columns.map(c => `<td>${String(r[c]||'').substring(0,25)}</td>`).join('')}</tr>`).join('');
+  document.getElementById('preview-wrap').innerHTML = `<table class="preview-table"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
+
+  document.getElementById('mapper-grid').innerHTML = FIELDS.map(f => `
+    <div class="mapper-row">
+      <span class="mapper-label">${f.label}</span>
+      <select class="mapper-select" id="map-${f.key}">
+        <option value="">— not present —</option>
+        ${columns.map(c => `<option value="${c}"${detected[f.key]===c?' selected':''}>${c}</option>`).join('')}
+      </select>
+    </div>`).join('');
+
+  document.getElementById('upload-section').style.display = 'none';
+  document.getElementById('mapper-section').style.display = 'block';
+}
+
+function confirmMapping() {
+  FIELDS.forEach(f => { colMap[f.key] = document.getElementById('map-' + f.key).value; });
+  rawData = normalise(parsedRows);
+  if (!rawData.length) { alert('No data rows found. Please check your column selections.'); return; }
+  document.getElementById('mapper-section').style.display = 'none';
+  showDashboard();
+}
+
+/* ══════════════════════════════════════════
+   NORMALISE
+══════════════════════════════════════════ */
+function normalise(rows) {
+  return rows.map(r => {
+    const g = k => String(r[colMap[k]] === undefined ? '' : r[colMap[k]] || '').trim();
+    const aNo = g('assessment_no');
+    const adbs = g('adbs_no');
+    const rs = g('sex');
+    const sex = rs.toUpperCase().startsWith('M') ? 'M' : rs.toUpperCase().startsWith('F') ? 'F' : 'U';
+    const age = parseFloat(g('age'));
+    const hc  = parseFloat(g('head_circ'));
+    const dateRaw = g('date');
+
+    let dateObj = null;
+    if (dateRaw) {
+      const n = parseFloat(dateRaw);
+      if (!isNaN(n) && n > 40000 && n < 60000) {
+        dateObj = new Date(Math.round((n - 25569) * 86400 * 1000));
+      } else {
+        const d = new Date(dateRaw);
+        if (!isNaN(d)) dateObj = d;
+      }
+    }
+
+    // KEY: extract diagnosis from digits 4-6 of assessment_no
+    const dx = getDxFromAssessment(aNo);
+    // Unique participant ID = adbs_no preferred, else last 6 digits of assessment_no
+    const pid = adbs || (aNo.length >= 9 ? aNo.substring(3) : aNo);
+
+    return {
+      aNo, pid, sex,
+      age: isNaN(age) ? null : age,
+      hc:  isNaN(hc)  ? null : hc,
+      dx,
+      dxName: DX_INFO[dx]?.name || 'Unknown',
+      phase: getPhase(aNo),
+      dateObj,
+      year:  dateObj ? dateObj.getFullYear() : null,
+      month: dateObj ? dateObj.getMonth()    : null,
+    };
+  });
+}
+
+/* ══════════════════════════════════════════
+   SHOW DASHBOARD
+══════════════════════════════════════════ */
+function showDashboard() {
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('upload-footer').style.display = 'flex';
+  document.getElementById('uf-name').textContent = uploadedFilename;
+
+  const sb = document.getElementById('status-badge');
+  sb.className = 'badge live'; sb.innerHTML = '<span class="pulse"></span>DATA LOADED'; sb.style.display = '';
+  document.getElementById('rec-badge').style.display = '';
+  document.getElementById('last-updated').style.display = '';
+
+  // Year dropdown
+  const years = [...new Set(rawData.map(d => d.year).filter(Boolean))].sort();
+  const sel = document.getElementById('yr-sel');
+  sel.innerHTML = '<option value="all">All Years</option>';
+  years.forEach(y => { const o = document.createElement('option'); o.value = y; o.textContent = y; sel.appendChild(o); });
+
+  renderAll();
+  document.getElementById('last-updated').textContent = `Loaded: ${new Date().toLocaleTimeString()}`;
+  document.getElementById('dashboard').scrollIntoView({ behavior:'smooth' });
+}
+
+/* ══════════════════════════════════════════
+   CHART DEFAULTS
+══════════════════════════════════════════ */
+Chart.defaults.font.family = "'IBM Plex Sans',sans-serif";
+Chart.defaults.font.size   = 12;
+Chart.defaults.color       = '#6b8299';
+Chart.defaults.borderColor = '#cdd9e8';
+Chart.defaults.plugins.tooltip.backgroundColor = '#0d2137';
+Chart.defaults.plugins.tooltip.titleColor      = '#e8f0f8';
+Chart.defaults.plugins.tooltip.bodyColor       = '#7fa8c8';
+Chart.defaults.plugins.tooltip.borderColor     = '#163656';
+Chart.defaults.plugins.tooltip.borderWidth     = 1;
+Chart.defaults.plugins.tooltip.padding         = 12;
+Chart.defaults.plugins.tooltip.cornerRadius    = 6;
+
+/* ══════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════ */
+const BUCKETS = [[0,10,'0–9'],[10,20,'10–19'],[20,30,'20–29'],[30,40,'30–39'],[40,50,'40–49'],[50,60,'50–59'],[60,70,'60–69'],[70,80,'70–79'],[80,200,'80+']];
+function bkt(a) { for (const [lo,hi,l] of BUCKETS) if (a>=lo && a<hi) return l; return '?'; }
+function exclHC(d) { return !(d.hc !== null && d.hc > 61); }
+function filt(data) {
+  return data.filter(d => {
+    if (AF.dx !== 'all' && d.dx !== AF.dx) return false;
+    if (AF.phase !== 'all' && String(d.phase) !== AF.phase) return false;
+    if (AF.year !== 'all' && String(d.year) !== AF.year) return false;
+    if (AF.sex !== 'all' && d.sex !== AF.sex) return false;
+    return true;
+  });
+}
+function uniqP(data) {
+  const m = new Map();
+  data.forEach(d => {
+    if (!d.pid) return;
+    if (!m.has(d.pid) || (d.phase||99) < (m.get(d.pid).phase||99)) m.set(d.pid, d);
+  });
+  return [...m.values()];
+}
+function med(arr) { if (!arr.length) return null; const s = [...arr].sort((a,b)=>a-b); return s[Math.floor(s.length/2)]; }
+function pct(n,t) { return t ? ((n/t)*100).toFixed(1) : '0.0'; }
+function dc(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+/* ══════════════════════════════════════════
+   RENDER ALL
+══════════════════════════════════════════ */
+function renderAll() {
+  const fil = rawData.filter(exclHC).filter(d => filt([d]).length);
+  const u = uniqP(fil);
+  doStats(fil, u);
+  rAge(u);
+  rSex(u);
+  rPhase(fil);
+  rDx(u);
+  rDxBar(u);
+  rCap();
+  rSeasonal(fil);
+  rPyramid(u);
+}
+
+function doStats(fil, u) {
+  const ex = rawData.filter(d => d.hc !== null && d.hc > 61).length;
+  const pm = {};
+  fil.forEach(d => { if (!d.pid) return; if (!pm[d.pid]) pm[d.pid] = new Set(); if (d.phase) pm[d.pid].add(d.phase); });
+  const ml = Object.values(pm).filter(s => s.size > 1).length;
+  const m = med(u.map(d => d.age).filter(a => a !== null));
+  document.getElementById('s-uniq').textContent  = u.length;
+  document.getElementById('s-total').textContent = fil.length;
+  document.getElementById('s-sex').textContent   = `${u.filter(d=>d.sex==='M').length} / ${u.filter(d=>d.sex==='F').length}`;
+  document.getElementById('s-age').textContent   = m !== null ? m.toFixed(1) : '—';
+  document.getElementById('s-excl').textContent  = ex;
+  document.getElementById('s-multi').textContent = ml;
+  document.getElementById('rec-badge').textContent = `${rawData.length} records`;
+}
+
+/* AGE */
+function rAge(u) {
+  dc('age');
+  const labels = BUCKETS.map(b=>b[2]);
+  const bm={}, bf={}, bo={};
+  labels.forEach(l => { bm[l]=0; bf[l]=0; bo[l]=0; });
+  u.forEach(d => {
+    if (d.age === null) return;
+    const b = bkt(d.age);
+    if (d.sex==='M') bm[b]++; else if (d.sex==='F') bf[b]++; else bo[b]++;
+  });
+  charts['age'] = new Chart(document.getElementById('cAge'), {
+    type:'bar',
+    data:{ labels, datasets:[
+      { label:'Male',    data:labels.map(l=>bm[l]), backgroundColor:'rgba(26,111,168,0.82)', borderColor:'#1a6fa8', borderWidth:1, borderRadius:2 },
+      { label:'Female',  data:labels.map(l=>bf[l]), backgroundColor:'rgba(181,68,110,0.82)', borderColor:'#b5446e', borderWidth:1, borderRadius:2 },
+      { label:'Unknown', data:labels.map(l=>bo[l]), backgroundColor:'rgba(75,96,112,0.6)',   borderColor:'#4b6070', borderWidth:1, borderRadius:2 },
+    ]},
+    options:{ responsive:true,
+      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:14 } },
+        tooltip:{ callbacks:{ afterBody: items => {
+          const b = BUCKETS.find(b=>b[2]===items[0].label);
+          const n = u.filter(d=>d.age!==null&&d.age>=b[0]&&d.age<b[1]).length;
+          return [`Total in group: ${n}`, '↗ Click to drill'];
+        }}}},
+      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' } }, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true } },
+      onClick:(_,els) => { if (els.length) drillAge(labels[els[0].index], u); }
+    }
+  });
+}
+
+/* SEX DOUGHNUT */
+function rSex(u) {
+  dc('sex');
+  const m=u.filter(d=>d.sex==='M').length, f=u.filter(d=>d.sex==='F').length, uu=u.length-m-f;
+  charts['sex'] = new Chart(document.getElementById('cSex'), {
+    type:'doughnut',
+    data:{ labels:['Male','Female','Unknown'], datasets:[{ data:[m,f,uu], backgroundColor:['rgba(26,111,168,0.82)','rgba(181,68,110,0.82)','rgba(75,96,112,0.6)'], borderColor:['#1a6fa8','#b5446e','#4b6070'], borderWidth:2, hoverOffset:6 }] },
+    options:{ responsive:true, cutout:'62%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 } }, tooltip:{ callbacks:{ label: i => ` ${i.label}: ${i.raw} (${pct(i.raw,u.length)}%)` }}}}
+  });
+}
+
+/* PHASE BY DIAGNOSIS */
+function rPhase(fil) {
+  dc('phase');
+  const phases = [1,2,3,4];
+  const datasets = DX_ORDER.filter(k=>k!=='UNK').map(k => ({
+    label: DX_INFO[k].name,
+    backgroundColor: DX_INFO[k].colorA,
+    borderWidth: 0, borderRadius: 2,
+    data: phases.map(ph => fil.filter(d => d.phase===ph && d.dx===k).length)
+  }));
+  // Add unknown
+  datasets.push({ label:'Unknown', backgroundColor:'rgba(75,96,112,0.5)', borderWidth:0, borderRadius:2, data: phases.map(ph=>fil.filter(d=>d.phase===ph&&d.dx==='UNK').length) });
+
+  charts['phase'] = new Chart(document.getElementById('cPhase'), {
+    type:'bar',
+    data:{ labels: phases.map(p=>`Phase ${p}`), datasets },
+    options:{ responsive:true, plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:10, font:{size:11} }}},
+      scales:{ x:{ stacked:true, grid:{ display:false } }, y:{ stacked:true, grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true }}}
+  });
+}
+
+/* DIAGNOSIS DOUGHNUT */
+function rDx(u) {
+  dc('dx');
+  const counts = {};
+  u.forEach(d => { counts[d.dx] = (counts[d.dx]||0) + 1; });
+  const entries = DX_ORDER.filter(k => counts[k]).map(k => [k, counts[k]]);
+  charts['dx'] = new Chart(document.getElementById('cDx'), {
+    type:'doughnut',
+    data:{ labels: entries.map(e=>DX_INFO[e[0]].name), datasets:[{ data: entries.map(e=>e[1]), backgroundColor: entries.map(e=>DX_INFO[e[0]].colorA), borderColor: entries.map(e=>DX_INFO[e[0]].color), borderWidth:2, hoverOffset:6 }]},
+    options:{ responsive:true, cutout:'60%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, padding:10, font:{size:11} }}, tooltip:{ callbacks:{ label: i => ` ${i.label}: ${i.raw} (${pct(i.raw,u.length)}%)` }}}}
+  });
+}
+
+/* DIAGNOSIS BAR CHART */
+function rDxBar(u) {
+  dc('dxbar');
+  const counts = {};
+  DX_ORDER.forEach(k => { counts[k] = 0; });
+  u.forEach(d => { if (counts[d.dx] !== undefined) counts[d.dx]++; });
+  const entries = DX_ORDER.filter(k => counts[k] > 0);
+  const total = u.length || 1;
+  charts['dxbar'] = new Chart(document.getElementById('cDxBar'), {
+    type:'bar',
+    data:{
+      labels: entries.map(k => DX_INFO[k].name),
+      datasets:[{ label:'Participants', data: entries.map(k=>counts[k]), backgroundColor: entries.map(k=>DX_INFO[k].colorA), borderColor: entries.map(k=>DX_INFO[k].color), borderWidth:2, borderRadius:4 }]
+    },
+    options:{ responsive:true, indexAxis:'y',
+      plugins:{ legend:{ display:false },
+        tooltip:{ callbacks:{
+          label: i => ` Count: ${i.raw}`,
+          afterLabel: i => ` Percentage: ${pct(i.raw, total)}%`
+        }}},
+      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true, title:{ display:true, text:'Number of unique participants', color:'#6b8299' }}, y:{ grid:{ display:false }}}
+    }
+  });
+}
+
+/* CAP SIZE */
+function rCap() {
+  dc('cap');
+  const cd = rawData.filter(d => d.hc !== null && d.hc <= 61);
+  const bk = {};
+  cd.forEach(d => { const k = Math.floor(d.hc); bk[k] = (bk[k]||0)+1; });
+  const s = Object.entries(bk).sort((a,b)=>+a[0]-+b[0]);
+  charts['cap'] = new Chart(document.getElementById('cCap'), {
+    type:'bar',
+    data:{ labels: s.map(e=>e[0]+' cm'), datasets:[{ label:'Visits', data:s.map(e=>e[1]), backgroundColor:s.map((_,i)=>`hsla(${195+i*2},55%,${36+i*0.5}%,0.82)`), borderWidth:0, borderRadius:3 }]},
+    options:{ responsive:true, plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ title:i=>`HC: ${i[0].label}`, label:i=>`Sample size: ${i.raw} visits` }}},
+      scales:{ x:{ grid:{ display:false }, ticks:{ maxRotation:45 }}, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true, title:{ display:true, text:'Frequency (visits)', color:'#6b8299' }}}}
+  });
+}
+
+/* SEASONAL */
+function rSeasonal(fil) {
+  dc('seas');
+  const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dd = fil.filter(d => d.month !== null && d.year !== null && d.year >= 2017);
+  const datasets = DX_ORDER.filter(k=>k!=='UNK').map(k => {
+    const monthly = new Array(12).fill(0);
+    dd.forEach(d => { if (d.dx===k) monthly[d.month]++; });
+    return { label:DX_INFO[k].name, data:monthly, borderColor:DX_INFO[k].color, backgroundColor:DX_INFO[k].color+'18', tension:0.4, fill:false, pointRadius:4, pointHoverRadius:7, pointBackgroundColor:DX_INFO[k].color, borderWidth:2 };
+  });
+  charts['seas'] = new Chart(document.getElementById('cSeasonal'), {
+    type:'line', data:{ labels:MN, datasets },
+    options:{ responsive:true, interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:10, font:{size:11} }},
+        tooltip:{ callbacks:{ afterBody: items => {
+          const t = items.reduce((s,i)=>s+i.raw,0);
+          const mn = items[0].label;
+          const ss = ['Dec','Jan','Feb'].includes(mn)?'❄ Winter':['Mar','Apr','May'].includes(mn)?'🌸 Spring':['Jun','Jul','Aug'].includes(mn)?'☀ Summer':'🍂 Autumn';
+          return [`Total: ${t}   ${ss}`];
+        }}}},
+      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }}, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true }}
+    }
+  });
+}
+
+/* PYRAMID */
+function rPyramid(u) {
+  dc('pyr');
+  const labels = BUCKETS.map(b=>b[2]);
+  const mD=[], fD=[];
+  BUCKETS.forEach(([lo,hi]) => {
+    const g = u.filter(d=>d.age!==null&&d.age>=lo&&d.age<hi);
+    mD.push(g.filter(d=>d.sex==='M').length);
+    fD.push(-g.filter(d=>d.sex==='F').length);
+  });
+  charts['pyr'] = new Chart(document.getElementById('cPyramid'), {
+    type:'bar',
+    data:{ labels, datasets:[
+      { label:'Male',   data:mD, backgroundColor:'rgba(26,111,168,0.82)', borderColor:'#1a6fa8', borderWidth:1, borderRadius:2 },
+      { label:'Female', data:fD, backgroundColor:'rgba(181,68,110,0.82)', borderColor:'#b5446e', borderWidth:1, borderRadius:2 },
+    ]},
+    options:{ responsive:true, indexAxis:'y',
+      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:14 }},
+        tooltip:{ callbacks:{ label: item => { const v=Math.abs(item.raw), i=labels.indexOf(item.label); const tot=mD[i]+Math.abs(fD[i]); return ` ${item.dataset.label}: ${v} (${pct(v,tot)}%)`; }}}},
+      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }, ticks:{ callback:v=>Math.abs(v) }}, y:{ grid:{ display:false }}},
+      onClick:(_,els) => { if (els.length) drillAge(labels[els[0].index], u); }
+    }
+  });
+}
+
+/* ══════════════════════════════════════════
+   MODALS
+══════════════════════════════════════════ */
+function openModal(t,b){ document.getElementById('mtitle').textContent=t; document.getElementById('mbody').innerHTML=b; document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeModal(); });
+
+function drillAge(label, u) {
+  const b = BUCKETS.find(b=>b[2]===label); if (!b) return;
+  const g = u.filter(d=>d.age!==null&&d.age>=b[0]&&d.age<b[1]);
+  const tot = g.length||1;
+  const m = g.filter(d=>d.sex==='M').length;
+  const f = g.filter(d=>d.sex==='F').length;
+
+  // Diagnosis counts
+  const dc2 = {};
+  g.forEach(d => { dc2[d.dx] = (dc2[d.dx]||0)+1; });
+  const maxN = Math.max(...Object.values(dc2),1);
+  const rows = DX_ORDER.filter(k=>dc2[k]).map(k => {
+    const n=dc2[k], info=DX_INFO[k];
+    return `<div class="dxrow">
+      <span class="dxname"><span class="dxdot" style="background:${info.color}"></span>${info.name}</span>
+      <div class="dxright">
+        <div class="dxbw"><div class="dxbf" style="width:${(n/maxN*100).toFixed(0)}%;background:${info.color}"></div></div>
+        <span class="dxcount">${n}</span>
+        <span class="dxpct">(${pct(n,tot)}%)</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  openModal(`Age Group: ${label}`, `
+    <div class="kpi-row">
+      <div class="kpi"><div class="kv" style="color:var(--teal)">${g.length}</div><div class="kl">Total Participants</div></div>
+      <div class="kpi"><div class="kv" style="color:#1a6fa8">${m} <span style="font-size:14px;font-weight:400">(${pct(m,tot)}%)</span></div><div class="kl">Male</div></div>
+      <div class="kpi"><div class="kv" style="color:#b5446e">${f} <span style="font-size:14px;font-weight:400">(${pct(f,tot)}%)</span></div><div class="kl">Female</div></div>
+    </div>
+    <div class="dl">Clinical Indications / Diagnosis</div>
+    ${rows || '<p style="color:var(--text-muted);font-size:13px">No diagnosis data for this age group.</p>'}`);
+}
+
+function drillSex() {
+  const fil = rawData.filter(exclHC).filter(d=>filt([d]).length);
+  const u = uniqP(fil);
+  const m=u.filter(d=>d.sex==='M'), f=u.filter(d=>d.sex==='F'), tot=u.length||1;
+  const avg = arr => { const a=arr.map(d=>d.age).filter(Boolean); return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):'—'; };
+  const rows = [1,2,3,4].map(ph=>{
+    const pm=u.filter(d=>d.phase===ph&&d.sex==='M').length;
+    const pf=u.filter(d=>d.phase===ph&&d.sex==='F').length;
+    return `<tr><td>Phase ${ph}</td><td><span class="chip m">${pm}</span></td><td><span class="chip f">${pf}</span></td><td>${pm+pf}</td><td style="color:var(--text-muted);font-family:'IBM Plex Mono',monospace">${pm+pf?pct(pm,pm+pf):'—'}% M</td></tr>`;
+  }).join('');
+  openModal('Sex Distribution Detail', `
+    <div class="kpi-row">
+      <div class="kpi"><div class="kv" style="color:#1a6fa8">${m.length} <span style="font-size:14px;font-weight:400">(${pct(m.length,tot)}%)</span></div><div class="kl">Male · Avg age ${avg(m)}</div></div>
+      <div class="kpi"><div class="kv" style="color:#b5446e">${f.length} <span style="font-size:14px;font-weight:400">(${pct(f.length,tot)}%)</span></div><div class="kl">Female · Avg age ${avg(f)}</div></div>
+      <div class="kpi"><div class="kv" style="color:var(--text-muted)">${tot-m.length-f.length}</div><div class="kl">Unknown</div></div>
+    </div>
+    <div class="dl">Phase Breakdown by Sex</div>
+    <table class="ptable"><tr><th>Phase</th><th>Male</th><th>Female</th><th>Total</th><th>Ratio</th></tr>${rows}</table>`);
+}
+
+/* ══════════════════════════════════════════
+   FILTER WIRING
+══════════════════════════════════════════ */
+document.querySelectorAll('[data-f]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ft=btn.dataset.f, fv=btn.dataset.v;
+    AF[ft]=fv;
+    document.querySelectorAll(`[data-f="${ft}"]`).forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if (rawData.length) renderAll();
+  });
+});
+document.getElementById('yr-sel').addEventListener('change', e => { AF.year=e.target.value; if(rawData.length) renderAll(); });
+</script>
+</body>
+</html>
