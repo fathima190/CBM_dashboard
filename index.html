@@ -13,12 +13,12 @@
   --navy:#0d2137; --navy-mid:#112a47; --navy-light:#163656;
   --panel:#f4f7fb; --panel2:#eaf0f8; --border:#cdd9e8;
   --teal:#007a7c; --teal-light:#009b9e;
-  --c160:#2d6a4f; --c160a:rgba(45,106,79,0.82);   /* Healthy Control - green */
-  --c150:#1a6fa8; --c150a:rgba(26,111,168,0.82);   /* Schizophrenia - blue */
-  --c140:#0e7490; --c140a:rgba(14,116,144,0.82);   /* OCD - cyan */
-  --c130:#b45309; --c130a:rgba(180,83,9,0.82);     /* Dementia - amber */
-  --c120:#6d28d9; --c120a:rgba(109,40,217,0.82);   /* BPAD - violet */
-  --c110:#be185d; --c110a:rgba(190,24,93,0.82);    /* SUD - pink */
+  --c160:#2d6a4f; --c160a:rgba(45,106,79,0.82);
+  --c150:#1a6fa8; --c150a:rgba(26,111,168,0.82);
+  --c140:#0e7490; --c140a:rgba(14,116,144,0.82);
+  --c130:#b45309; --c130a:rgba(180,83,9,0.82);
+  --c120:#6d28d9; --c120a:rgba(109,40,217,0.82);
+  --c110:#be185d; --c110a:rgba(190,24,93,0.82);
   --cunk:#4b6070; --cUnkA:rgba(75,96,112,0.6);
   --male:#1a6fa8; --male-a:rgba(26,111,168,0.82); --male-l:#d0e8f8;
   --female:#b5446e; --female-a:rgba(181,68,110,0.82); --female-l:#fce7f3;
@@ -32,7 +32,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--panel);color:var(--
   background-image:linear-gradient(rgba(13,33,55,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(13,33,55,0.05) 1px,transparent 1px);
   background-size:32px 32px;}
 
-/* HEADER */
 header{background:var(--navy);color:#fff;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-lg);}
 .hdr-left{display:flex;align-items:center;gap:14px;}
 .hdr-logo{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,var(--teal-light),#005f6b);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:#fff;letter-spacing:1px;}
@@ -46,7 +45,6 @@ header{background:var(--navy);color:#fff;padding:0 32px;height:64px;display:flex
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 #last-updated{font-size:11px;color:#5a7a96;font-family:'IBM Plex Mono',monospace;}
 
-/* UPLOAD ZONE */
 #upload-section{max-width:640px;margin:60px auto;padding:0 32px;}
 .upload-card{background:#fff;border:2px dashed var(--border);border-radius:12px;padding:48px 40px;text-align:center;transition:all .2s;cursor:pointer;}
 .upload-card:hover,.upload-card.dragover{border-color:var(--teal);background:rgba(0,122,124,0.04);}
@@ -59,11 +57,9 @@ header{background:var(--navy);color:#fff;padding:0 32px;height:64px;display:flex
 .upload-formats{margin-top:16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);}
 .upload-error{margin-top:12px;padding:10px 16px;border-radius:6px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;font-size:13px;display:none;}
 
-/* DX KEY LEGEND */
 .dx-key{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;justify-content:center;}
 .dx-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-family:'IBM Plex Mono',monospace;border:1px solid;font-weight:500;}
 
-/* COLUMN MAPPER */
 #mapper-section{display:none;max-width:720px;margin:40px auto;padding:0 32px;}
 .mapper-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px 32px;box-shadow:var(--shadow);}
 .mapper-title{font-size:16px;font-weight:600;margin-bottom:6px;}
@@ -82,10 +78,8 @@ header{background:var(--navy);color:#fff;padding:0 32px;height:64px;display:flex
 .preview-table th{background:var(--panel2);padding:7px 10px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.5px;border-bottom:1px solid var(--border);position:sticky;top:0;}
 .preview-table td{padding:7px 10px;border-bottom:1px solid var(--panel2);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-mid);}
 
-/* DASHBOARD */
 #dashboard{display:none;}
 
-/* FILTERS */
 .filters{background:#fff;border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:0 1px 4px rgba(13,33,55,0.06);}
 .flabel{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
 .fsep{width:1px;height:24px;background:var(--border);margin:0 4px;}
@@ -100,7 +94,6 @@ header{background:var(--navy);color:#fff;padding:0 32px;height:64px;display:flex
 .fbtn.f110.active{background:var(--c110);border-color:var(--c110);color:#fff;}
 select.fsel{padding:5px 10px;border-radius:4px;border:1px solid var(--border);background:#fff;color:var(--text-mid);font-size:12px;font-family:'IBM Plex Sans',sans-serif;outline:none;cursor:pointer;}
 
-/* STATS */
 .stats-strip{display:grid;grid-template-columns:repeat(6,1fr);background:var(--border);border-bottom:1px solid var(--border);}
 .sc{background:#fff;padding:18px 22px;border-right:1px solid var(--border);}
 .sc:last-child{border-right:none;}
@@ -111,12 +104,11 @@ select.fsel{padding:5px 10px;border-radius:4px;border:1px solid var(--border);ba
 .sv.ct{color:var(--teal);}.sv.cs{color:var(--c150);}.sv.cd{color:var(--c130);}.sv.cb{color:var(--c120);}.sv.cf{color:var(--female);}.sv.cm{color:var(--text-muted);}
 .sn{font-size:11px;color:var(--text-muted);margin-top:4px;}
 
-/* SECTION LABELS */
 .slabel{padding:16px 32px 0;font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;}
 
-/* CHART GRID */
 .grid{display:grid;gap:16px;padding:12px 32px;}
 .g-2-1{grid-template-columns:2fr 1fr;}
+.g-2{grid-template-columns:1fr 1fr;}
 .g-3{grid-template-columns:1fr 1fr 1fr;}
 .g-1{grid-template-columns:1fr;}
 .card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px 22px;box-shadow:var(--shadow);}
@@ -126,7 +118,14 @@ select.fsel{padding:5px 10px;border-radius:4px;border:1px solid var(--border);ba
 .card-tag{font-size:9px;font-family:'IBM Plex Mono',monospace;padding:2px 7px;border-radius:3px;background:var(--panel2);color:var(--text-muted);border:1px solid var(--border);white-space:nowrap;}
 canvas{max-height:260px;width:100%!important;}
 
-/* MODAL */
+/* Cap usage summary pills */
+.cap-summary{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.cap-pill{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--panel);}
+.cap-pill-dot{width:12px;height:12px;border-radius:50%;}
+.cap-pill-label{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);}
+.cap-pill-val{font-size:18px;font-weight:600;color:var(--text);line-height:1;}
+.cap-pill-pct{font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;}
+
 .moverlay{display:none;position:fixed;inset:0;background:rgba(13,33,55,0.55);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;}
 .moverlay.open{display:flex;}
 .modal{background:#fff;border-radius:10px;border:1px solid var(--border);padding:28px 30px;width:92%;max-width:700px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
@@ -155,7 +154,6 @@ canvas{max-height:260px;width:100%!important;}
 .chip{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:500;}
 .chip.m{background:var(--male-l);color:var(--male);}.chip.f{background:var(--female-l);color:var(--female);}
 
-/* UPLOAD FOOTER */
 #upload-footer{background:#fff;border-top:1px solid var(--border);padding:16px 32px;display:none;align-items:center;gap:16px;flex-wrap:wrap;}
 .uf-label{font-size:12px;color:var(--text-muted);}
 .uf-btn{padding:7px 18px;border-radius:5px;border:1px solid var(--border);background:#fff;color:var(--text-mid);cursor:pointer;font-size:12px;font-family:'IBM Plex Sans',sans-serif;transition:all .15s;}
@@ -167,7 +165,7 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
 
 @media(max-width:900px){
   .stats-strip{grid-template-columns:repeat(3,1fr);}
-  .grid.g-2-1,.grid.g-3{grid-template-columns:1fr;}
+  .grid.g-2-1,.grid.g-3,.grid.g-2{grid-template-columns:1fr;}
   .mapper-grid{grid-template-columns:1fr;}
 }
 </style>
@@ -189,20 +187,17 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
   </div>
 </header>
 
-<!-- ═══ UPLOAD ═══ -->
 <div id="upload-section">
   <div class="upload-card" id="drop-zone">
     <div class="upload-icon">📊</div>
     <div class="upload-title">Upload Your Cohort Data</div>
     <div class="upload-sub">
       Drop your Excel or CSV file here, or click to browse.<br>
-      Diagnosis is automatically extracted from digits 4–6 of the Assessment Number.<br>
+      Diagnosis is automatically extracted from digits 4–6 of the Assessment Number.
     </div>
     <label class="upload-btn" for="file-input">Choose File</label>
     <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.tsv">
     <div class="upload-formats">Supported: .xlsx · .xls · .csv · .tsv</div>
-
-    <!-- Diagnosis key -->
     <div class="dx-key">
       <span class="dx-pill" style="background:rgba(45,106,79,0.1);color:#2d6a4f;border-color:#2d6a4f">● 160 — Healthy Control</span>
       <span class="dx-pill" style="background:rgba(26,111,168,0.1);color:#1a6fa8;border-color:#1a6fa8">● 150 — Schizophrenia</span>
@@ -211,12 +206,10 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
       <span class="dx-pill" style="background:rgba(109,40,217,0.1);color:#6d28d9;border-color:#6d28d9">● 120 — BPAD</span>
       <span class="dx-pill" style="background:rgba(190,24,93,0.1);color:#be185d;border-color:#be185d">● 110 — SUD</span>
     </div>
-
     <div class="upload-error" id="upload-error"></div>
   </div>
 </div>
 
-<!-- ═══ MAPPER ═══ -->
 <div id="mapper-section">
   <div class="mapper-card">
     <div class="mapper-title">Map Your Column Names</div>
@@ -232,7 +225,6 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
   </div>
 </div>
 
-<!-- ═══ DASHBOARD ═══ -->
 <div id="dashboard">
   <div class="filters">
     <span class="flabel">Diagnosis</span>
@@ -265,7 +257,7 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
     <div class="sc"><div class="st">Total Assessments</div><div class="sv cs" id="s-total">—</div><div class="sn">Including repeat visits</div></div>
     <div class="sc clickable" onclick="drillSex()"><div class="st">Sex (M / F) ↗</div><div class="sv cd" id="s-sex">—</div><div class="sn">Click to explore</div></div>
     <div class="sc"><div class="st">Median Age</div><div class="sv cb" id="s-age">—</div><div class="sn">Unique participants</div></div>
-    <div class="sc"><div class="st">Excluded (HC &gt;61 cm)</div><div class="sv cf" id="s-excl">—</div><div class="sn">Head circumference</div></div>
+    <div class="sc"><div class="st">Excluded HC (&gt;61 cm)</div><div class="sv cf" id="s-excl">—</div><div class="sn">Head circumference chart only</div></div>
     <div class="sc"><div class="st">Multi-visit</div><div class="sv cm" id="s-multi">—</div><div class="sn">Attended &gt;1 phase</div></div>
   </div>
 
@@ -299,10 +291,9 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
     </div>
   </div>
 
-  <!-- Diagnosis counts row -->
   <div class="slabel" style="margin-top:8px">DIAGNOSIS COUNTS</div>
   <div class="grid g-3">
-    <div class="card" id="dx-count-card" style="grid-column:span 3">
+    <div class="card" style="grid-column:span 3">
       <div class="card-hdr">
         <div><div class="card-title">Participant Count per Diagnosis</div><div class="card-hint">Unique participants · hover for percentage</div></div>
         <span class="card-tag">UNIQUE</span>
@@ -312,13 +303,21 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
   </div>
 
   <div class="slabel" style="margin-top:8px">CAP SIZE &amp; HEAD CIRCUMFERENCE</div>
-  <div class="grid g-1">
+  <div class="grid g-2">
     <div class="card">
       <div class="card-hdr">
-        <div><div class="card-title">Head Circumference — Cap Usage Frequency</div><div class="card-hint">Repeat visits retained · HC &gt;61 cm globally excluded</div></div>
+        <div><div class="card-title">Head Circumference Distribution</div><div class="card-hint">All values including &gt;61 cm shown · 0.5 cm precision · amber bars excluded from HC stats</div></div>
         <span class="card-tag">ALL VISITS</span>
       </div>
-      <canvas id="cCap" style="max-height:220px"></canvas>
+      <canvas id="cCap" style="max-height:260px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">EEG Cap Type — 129-ch vs 32-ch</div><div class="card-hint">Unique participants · 129-ch cap (col 128 = 1) · 32-ch cap (col 128 = 0)</div></div>
+        <span class="card-tag">UNIQUE</span>
+      </div>
+      <div class="cap-summary" id="cap-summary"></div>
+      <canvas id="c128" style="max-height:200px"></canvas>
     </div>
   </div>
 
@@ -326,7 +325,7 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
   <div class="grid g-1">
     <div class="card">
       <div class="card-hdr">
-        <div><div class="card-title">Monthly Patient Volume by Diagnosis</div><div class="card-hint">Which diagnosis peaks in winter? Hover for group counts + season</div></div>
+        <div><div class="card-title">Monthly Patient Volume by Diagnosis</div><div class="card-hint">Hover for group counts</div></div>
         <span class="card-tag">ALL ASSESSMENTS</span>
       </div>
       <canvas id="cSeasonal" style="max-height:300px"></canvas>
@@ -362,9 +361,6 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
 </div>
 
 <script>
-/* ══════════════════════════════════════════
-   DIAGNOSIS MAP — extracted from digits 4-6
-══════════════════════════════════════════ */
 const DX_INFO = {
   '160': { name:'Healthy Control', color:'#2d6a4f', colorA:'rgba(45,106,79,0.82)',  light:'rgba(45,106,79,0.12)' },
   '150': { name:'Schizophrenia',   color:'#1a6fa8', colorA:'rgba(26,111,168,0.82)', light:'rgba(26,111,168,0.12)' },
@@ -378,10 +374,7 @@ const DX_ORDER = ['160','150','140','130','120','110','UNK'];
 
 function getDxFromAssessment(aNo) {
   const s = String(aNo || '').trim().replace(/\s/g, '');
-  if (s.length >= 6) {
-    const code = s.substring(3, 6);
-    if (DX_INFO[code]) return code;
-  }
+  if (s.length >= 6) { const code = s.substring(3, 6); if (DX_INFO[code]) return code; }
   return 'UNK';
 }
 
@@ -395,24 +388,6 @@ function getPhase(aNo) {
   return null;
 }
 
-function getPid(aNo, adbs) {
-  const s = String(aNo || '').trim().replace(/\s/g, '');
-  // last 6 digits (digits 4-9 or 7-9 depending on format)
-  if (s.length >= 9) return s.substring(6); // last 3 digits as unique within dx group
-  if (s.length >= 6) return s.substring(3);
-  return String(adbs || s).trim();
-}
-
-/* For uniqueness we use the full last-6-digits of assessment_no (the participant identifier part) */
-function getFullPid(aNo, adbs) {
-  const s = String(aNo || '').trim().replace(/\s/g, '');
-  if (s.length >= 9) return s.substring(3); // digits 4-9 = diagnosis(3) + participant(3) — but truly unique is the adbs_no
-  return String(adbs || aNo || '').trim();
-}
-
-/* ══════════════════════════════════════════
-   STATE & CONFIG
-══════════════════════════════════════════ */
 let rawData = [], charts = {}, colMap = {}, uploadedFilename = '';
 let AF = { dx:'all', phase:'all', year:'all', sex:'all' };
 
@@ -423,12 +398,9 @@ const FIELDS = [
   { key:'age',           label:'Age*',                     auto:['age'] },
   { key:'head_circ',     label:'Head Circumference (cm)',  auto:['head_circumference','head_circ','hc','headcirc','head circumference'] },
   { key:'date',          label:'Visit Date (optional)',     auto:['date','visit_date','assessment_date','date_of_assessment'] },
-  { key:'col_128',       label:'Column "128" (1=yes/0=no)',auto:['128'] },
+  { key:'col_128',       label:'Column "128" (1=129ch / 0=32ch)', auto:['128'] },
 ];
 
-/* ══════════════════════════════════════════
-   FILE HANDLING
-══════════════════════════════════════════ */
 function handleFile(file) {
   if (!file) return;
   uploadedFilename = file.name;
@@ -466,9 +438,6 @@ dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag
 document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
 document.getElementById('file-input2').addEventListener('change', e => handleFile(e.target.files[0]));
 
-/* ══════════════════════════════════════════
-   COLUMN MAPPER
-══════════════════════════════════════════ */
 let parsedRows = [];
 function showMapper(rows) {
   parsedRows = rows;
@@ -479,7 +448,6 @@ function showMapper(rows) {
     detected[f.key] = match ? columns.find(c => c.trim().toLowerCase() === match) : '';
   });
 
-  // Preview
   const previewRows = rows.slice(0, 5);
   let th = columns.map(c => `<th>${c}</th>`).join('');
   let trs = previewRows.map(r => `<tr>${columns.map(c => `<td>${String(r[c]||'').substring(0,25)}</td>`).join('')}</tr>`).join('');
@@ -506,19 +474,25 @@ function confirmMapping() {
   showDashboard();
 }
 
-/* ══════════════════════════════════════════
-   NORMALISE
-══════════════════════════════════════════ */
 function normalise(rows) {
   return rows.map(r => {
     const g = k => String(r[colMap[k]] === undefined ? '' : r[colMap[k]] || '').trim();
-    const aNo = g('assessment_no');
-    const adbs = g('adbs_no');
-    const rs = g('sex');
-    const sex = rs.toUpperCase().startsWith('M') ? 'M' : rs.toUpperCase().startsWith('F') ? 'F' : 'U';
-    const age = parseFloat(g('age'));
-    const hc  = parseFloat(g('head_circ'));
+    const aNo    = g('assessment_no');
+    const adbs   = g('adbs_no');
+    const rs     = g('sex');
+    const sex    = rs.toUpperCase().startsWith('M') ? 'M' : rs.toUpperCase().startsWith('F') ? 'F' : 'U';
+    const age    = parseFloat(g('age'));
+    const hcRaw  = g('head_circ');
+    const hc     = hcRaw === '' ? null : parseFloat(hcRaw);
     const dateRaw = g('date');
+
+    // Parse 128 column: 1 → 129-ch cap, 0 → 32-ch cap
+    const raw128 = g('col_128');
+    let capType = null; // null = no data, '129' = 129-ch, '32' = 32-ch
+    if (raw128 !== '') {
+      const n = parseFloat(raw128);
+      if (!isNaN(n)) capType = n === 1 ? '129' : (n === 0 ? '32' : null);
+    }
 
     let dateObj = null;
     if (dateRaw) {
@@ -531,28 +505,24 @@ function normalise(rows) {
       }
     }
 
-    // KEY: extract diagnosis from digits 4-6 of assessment_no
-    const dx = getDxFromAssessment(aNo);
-    // Unique participant ID = adbs_no preferred, else last 6 digits of assessment_no
+    const dx  = getDxFromAssessment(aNo);
     const pid = adbs || (aNo.length >= 9 ? aNo.substring(3) : aNo);
 
     return {
       aNo, pid, sex,
-      age: isNaN(age) ? null : age,
-      hc:  isNaN(hc)  ? null : hc,
+      age:     isNaN(age) ? null : age,
+      hc:      (hc === null || isNaN(hc)) ? null : hc,
+      capType,
       dx,
-      dxName: DX_INFO[dx]?.name || 'Unknown',
-      phase: getPhase(aNo),
+      dxName:  DX_INFO[dx]?.name || 'Unknown',
+      phase:   getPhase(aNo),
       dateObj,
-      year:  dateObj ? dateObj.getFullYear() : null,
-      month: dateObj ? dateObj.getMonth()    : null,
+      year:    dateObj ? dateObj.getFullYear() : null,
+      month:   dateObj ? dateObj.getMonth()    : null,
     };
   });
 }
 
-/* ══════════════════════════════════════════
-   SHOW DASHBOARD
-══════════════════════════════════════════ */
 function showDashboard() {
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('upload-footer').style.display = 'flex';
@@ -563,7 +533,6 @@ function showDashboard() {
   document.getElementById('rec-badge').style.display = '';
   document.getElementById('last-updated').style.display = '';
 
-  // Year dropdown
   const years = [...new Set(rawData.map(d => d.year).filter(Boolean))].sort();
   const sel = document.getElementById('yr-sel');
   sel.innerHTML = '<option value="all">All Years</option>';
@@ -574,9 +543,6 @@ function showDashboard() {
   document.getElementById('dashboard').scrollIntoView({ behavior:'smooth' });
 }
 
-/* ══════════════════════════════════════════
-   CHART DEFAULTS
-══════════════════════════════════════════ */
 Chart.defaults.font.family = "'IBM Plex Sans',sans-serif";
 Chart.defaults.font.size   = 12;
 Chart.defaults.color       = '#6b8299';
@@ -589,21 +555,20 @@ Chart.defaults.plugins.tooltip.borderWidth     = 1;
 Chart.defaults.plugins.tooltip.padding         = 12;
 Chart.defaults.plugins.tooltip.cornerRadius    = 6;
 
-/* ══════════════════════════════════════════
-   HELPERS
-══════════════════════════════════════════ */
 const BUCKETS = [[0,10,'0–9'],[10,20,'10–19'],[20,30,'20–29'],[30,40,'30–39'],[40,50,'40–49'],[50,60,'50–59'],[60,70,'60–69'],[70,80,'70–79'],[80,200,'80+']];
 function bkt(a) { for (const [lo,hi,l] of BUCKETS) if (a>=lo && a<hi) return l; return '?'; }
-function exclHC(d) { return !(d.hc !== null && d.hc > 61); }
+
 function filt(data) {
   return data.filter(d => {
-    if (AF.dx !== 'all' && d.dx !== AF.dx) return false;
+    if (AF.dx    !== 'all' && d.dx          !== AF.dx)    return false;
     if (AF.phase !== 'all' && String(d.phase) !== AF.phase) return false;
-    if (AF.year !== 'all' && String(d.year) !== AF.year) return false;
-    if (AF.sex !== 'all' && d.sex !== AF.sex) return false;
+    if (AF.year  !== 'all' && String(d.year)  !== AF.year)  return false;
+    if (AF.sex   !== 'all' && d.sex           !== AF.sex)   return false;
     return true;
   });
 }
+
+/* Unique participant deduplication — keep earliest phase record per pid */
 function uniqP(data) {
   const m = new Map();
   data.forEach(d => {
@@ -612,23 +577,49 @@ function uniqP(data) {
   });
   return [...m.values()];
 }
-function med(arr) { if (!arr.length) return null; const s = [...arr].sort((a,b)=>a-b); return s[Math.floor(s.length/2)]; }
-function pct(n,t) { return t ? ((n/t)*100).toFixed(1) : '0.0'; }
-function dc(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
 
-/* ══════════════════════════════════════════
-   RENDER ALL
-══════════════════════════════════════════ */
+/*
+  For the cap chart we need special deduplication logic:
+  A participant might appear in multiple phases. We want to know which cap type
+  they EVER used — if they used 129-ch in any visit, count as 129-ch.
+  If they only ever used 32-ch, count as 32-ch.
+  If no data at all, exclude from the chart.
+*/
+function uniqPCapType(data) {
+  // Build map: pid → Set of capTypes across all (filtered) visits
+  const pidCaps = new Map();
+  data.forEach(d => {
+    if (!d.pid || d.capType === null) return;
+    if (!pidCaps.has(d.pid)) pidCaps.set(d.pid, new Set());
+    pidCaps.get(d.pid).add(d.capType);
+  });
+
+  const result = { '129': 0, '32': 0, both: 0 };
+  pidCaps.forEach(caps => {
+    const has129 = caps.has('129');
+    const has32  = caps.has('32');
+    if (has129 && has32) { result.both++; }
+    else if (has129)     { result['129']++; }
+    else if (has32)      { result['32']++; }
+  });
+  return result;
+}
+
+function med(arr) { if (!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); return s[Math.floor(s.length/2)]; }
+function pct(n,t) { return t ? ((n/t)*100).toFixed(1) : '0.0'; }
+function dc(id)   { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
 function renderAll() {
-  const fil = rawData.filter(exclHC).filter(d => filt([d]).length);
-  const u = uniqP(fil);
+  const fil = filt(rawData);
+  const u   = uniqP(fil);
   doStats(fil, u);
   rAge(u);
   rSex(u);
   rPhase(fil);
   rDx(u);
   rDxBar(u);
-  rCap();
+  rCap(rawData);
+  r128(fil);
   rSeasonal(fil);
   rPyramid(u);
 }
@@ -638,7 +629,7 @@ function doStats(fil, u) {
   const pm = {};
   fil.forEach(d => { if (!d.pid) return; if (!pm[d.pid]) pm[d.pid] = new Set(); if (d.phase) pm[d.pid].add(d.phase); });
   const ml = Object.values(pm).filter(s => s.size > 1).length;
-  const m = med(u.map(d => d.age).filter(a => a !== null));
+  const m  = med(u.map(d => d.age).filter(a => a !== null));
   document.getElementById('s-uniq').textContent  = u.length;
   document.getElementById('s-total').textContent = fil.length;
   document.getElementById('s-sex').textContent   = `${u.filter(d=>d.sex==='M').length} / ${u.filter(d=>d.sex==='F').length}`;
@@ -648,7 +639,6 @@ function doStats(fil, u) {
   document.getElementById('rec-badge').textContent = `${rawData.length} records`;
 }
 
-/* AGE */
 function rAge(u) {
   dc('age');
   const labels = BUCKETS.map(b=>b[2]);
@@ -667,51 +657,44 @@ function rAge(u) {
       { label:'Unknown', data:labels.map(l=>bo[l]), backgroundColor:'rgba(75,96,112,0.6)',   borderColor:'#4b6070', borderWidth:1, borderRadius:2 },
     ]},
     options:{ responsive:true,
-      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:14 } },
+      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:14 }},
         tooltip:{ callbacks:{ afterBody: items => {
           const b = BUCKETS.find(b=>b[2]===items[0].label);
           const n = u.filter(d=>d.age!==null&&d.age>=b[0]&&d.age<b[1]).length;
           return [`Total in group: ${n}`, '↗ Click to drill'];
         }}}},
-      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' } }, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true } },
+      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }}, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true }},
       onClick:(_,els) => { if (els.length) drillAge(labels[els[0].index], u); }
     }
   });
 }
 
-/* SEX DOUGHNUT */
 function rSex(u) {
   dc('sex');
   const m=u.filter(d=>d.sex==='M').length, f=u.filter(d=>d.sex==='F').length, uu=u.length-m-f;
   charts['sex'] = new Chart(document.getElementById('cSex'), {
     type:'doughnut',
-    data:{ labels:['Male','Female','Unknown'], datasets:[{ data:[m,f,uu], backgroundColor:['rgba(26,111,168,0.82)','rgba(181,68,110,0.82)','rgba(75,96,112,0.6)'], borderColor:['#1a6fa8','#b5446e','#4b6070'], borderWidth:2, hoverOffset:6 }] },
-    options:{ responsive:true, cutout:'62%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 } }, tooltip:{ callbacks:{ label: i => ` ${i.label}: ${i.raw} (${pct(i.raw,u.length)}%)` }}}}
+    data:{ labels:['Male','Female','Unknown'], datasets:[{ data:[m,f,uu], backgroundColor:['rgba(26,111,168,0.82)','rgba(181,68,110,0.82)','rgba(75,96,112,0.6)'], borderColor:['#1a6fa8','#b5446e','#4b6070'], borderWidth:2, hoverOffset:6 }]},
+    options:{ responsive:true, cutout:'62%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 }}, tooltip:{ callbacks:{ label: i => ` ${i.label}: ${i.raw} (${pct(i.raw,u.length)}%)` }}}}
   });
 }
 
-/* PHASE BY DIAGNOSIS */
 function rPhase(fil) {
   dc('phase');
   const phases = [1,2,3,4];
   const datasets = DX_ORDER.filter(k=>k!=='UNK').map(k => ({
-    label: DX_INFO[k].name,
-    backgroundColor: DX_INFO[k].colorA,
-    borderWidth: 0, borderRadius: 2,
+    label: DX_INFO[k].name, backgroundColor: DX_INFO[k].colorA, borderWidth:0, borderRadius:2,
     data: phases.map(ph => fil.filter(d => d.phase===ph && d.dx===k).length)
   }));
-  // Add unknown
-  datasets.push({ label:'Unknown', backgroundColor:'rgba(75,96,112,0.5)', borderWidth:0, borderRadius:2, data: phases.map(ph=>fil.filter(d=>d.phase===ph&&d.dx==='UNK').length) });
-
+  datasets.push({ label:'Unknown', backgroundColor:'rgba(75,96,112,0.5)', borderWidth:0, borderRadius:2,
+    data: phases.map(ph => fil.filter(d=>d.phase===ph&&d.dx==='UNK').length) });
   charts['phase'] = new Chart(document.getElementById('cPhase'), {
-    type:'bar',
-    data:{ labels: phases.map(p=>`Phase ${p}`), datasets },
+    type:'bar', data:{ labels: phases.map(p=>`Phase ${p}`), datasets },
     options:{ responsive:true, plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:10, font:{size:11} }}},
-      scales:{ x:{ stacked:true, grid:{ display:false } }, y:{ stacked:true, grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true }}}
+      scales:{ x:{ stacked:true, grid:{ display:false }}, y:{ stacked:true, grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true }}}
   });
 }
 
-/* DIAGNOSIS DOUGHNUT */
 function rDx(u) {
   dc('dx');
   const counts = {};
@@ -724,47 +707,132 @@ function rDx(u) {
   });
 }
 
-/* DIAGNOSIS BAR CHART */
 function rDxBar(u) {
   dc('dxbar');
   const counts = {};
   DX_ORDER.forEach(k => { counts[k] = 0; });
   u.forEach(d => { if (counts[d.dx] !== undefined) counts[d.dx]++; });
   const entries = DX_ORDER.filter(k => counts[k] > 0);
-  const total = u.length || 1;
+  const total   = u.length || 1;
   charts['dxbar'] = new Chart(document.getElementById('cDxBar'), {
     type:'bar',
-    data:{
-      labels: entries.map(k => DX_INFO[k].name),
-      datasets:[{ label:'Participants', data: entries.map(k=>counts[k]), backgroundColor: entries.map(k=>DX_INFO[k].colorA), borderColor: entries.map(k=>DX_INFO[k].color), borderWidth:2, borderRadius:4 }]
-    },
+    data:{ labels: entries.map(k=>DX_INFO[k].name), datasets:[{ label:'Participants', data: entries.map(k=>counts[k]), backgroundColor: entries.map(k=>DX_INFO[k].colorA), borderColor: entries.map(k=>DX_INFO[k].color), borderWidth:2, borderRadius:4 }]},
     options:{ responsive:true, indexAxis:'y',
-      plugins:{ legend:{ display:false },
-        tooltip:{ callbacks:{
-          label: i => ` Count: ${i.raw}`,
-          afterLabel: i => ` Percentage: ${pct(i.raw, total)}%`
-        }}},
-      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true, title:{ display:true, text:'Number of unique participants', color:'#6b8299' }}, y:{ grid:{ display:false }}}
+      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label: i => ` Count: ${i.raw}`, afterLabel: i => ` Percentage: ${pct(i.raw, total)}%` }}},
+      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true, title:{ display:true, text:'Number of unique participants', color:'#6b8299' }}, y:{ grid:{ display:false }}}}
+  });
+}
+
+function rCap(data) {
+  dc('cap');
+  const cd = data.filter(d => d.hc !== null && !isNaN(d.hc) && d.hc > 0);
+  if (!cd.length) return;
+
+  const bk = {};
+  cd.forEach(d => {
+    const k = (Math.round(d.hc * 2) / 2).toFixed(1);
+    bk[k] = (bk[k]||0) + 1;
+  });
+
+  const sorted      = Object.entries(bk).sort((a,b) => parseFloat(a[0]) - parseFloat(b[0]));
+  const labels      = sorted.map(e => e[0] + ' cm');
+  const values      = sorted.map(e => e[1]);
+  const keys        = sorted.map(e => parseFloat(e[0]));
+  const bgColors    = keys.map((k,i) => k > 61 ? 'rgba(180,83,9,0.75)' : `hsla(${195 + i*1.5},55%,38%,0.82)`);
+  const borderColors = keys.map(k => k > 61 ? '#b45309' : '#0e7490');
+
+  charts['cap'] = new Chart(document.getElementById('cCap'), {
+    type:'bar',
+    data:{ labels, datasets:[{ label:'Visits', data:values, backgroundColor:bgColors, borderColor:borderColors, borderWidth:1, borderRadius:3 }]},
+    options:{ responsive:true,
+      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{
+        title: i => `HC: ${i[0].label}`,
+        label: i => `Count: ${i.raw} visit${i.raw!==1?'s':''}`,
+        afterLabel: i => parseFloat(i.label) > 61 ? '⚠ Excluded from HC-based stats' : ''
+      }}},
+      scales:{ x:{ grid:{ display:false }, ticks:{ maxRotation:60, font:{size:10} }}, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true, title:{ display:true, text:'Frequency (visits)', color:'#6b8299' }}}}
+  });
+}
+
+/* 
+  Cap type chart — UNIQUE participants.
+  Uses the full filtered dataset to find, per unique pid,
+  which cap(s) they used across any visit.
+  129-ch (col 128 = 1) vs 32-ch (col 128 = 0).
+  Participants who used BOTH are shown in a third "Both" slice.
+*/
+function r128(fil) {
+  dc('128');
+
+  const capData  = uniqPCapType(fil);
+  const n129     = capData['129'];
+  const n32      = capData['32'];
+  const nBoth    = capData.both;
+  const total    = n129 + n32 + nBoth;
+
+  // Summary pills
+  const summaryEl = document.getElementById('cap-summary');
+  if (total === 0) {
+    summaryEl.innerHTML = '<span style="font-size:12px;color:var(--text-muted);font-family:IBM Plex Mono,monospace;">No cap type data available for mapped "128" column.</span>';
+    return;
+  }
+
+  summaryEl.innerHTML = `
+    <div class="cap-pill">
+      <div class="cap-pill-dot" style="background:#007a7c"></div>
+      <div>
+        <div class="cap-pill-val">${n129}</div>
+        <div class="cap-pill-label">129-ch cap</div>
+      </div>
+      <div class="cap-pill-pct">${pct(n129,total)}%</div>
+    </div>
+    <div class="cap-pill">
+      <div class="cap-pill-dot" style="background:#6d28d9"></div>
+      <div>
+        <div class="cap-pill-val">${n32}</div>
+        <div class="cap-pill-label">32-ch cap</div>
+      </div>
+      <div class="cap-pill-pct">${pct(n32,total)}%</div>
+    </div>
+    ${nBoth > 0 ? `
+    <div class="cap-pill">
+      <div class="cap-pill-dot" style="background:#b45309"></div>
+      <div>
+        <div class="cap-pill-val">${nBoth}</div>
+        <div class="cap-pill-label">Used both</div>
+      </div>
+      <div class="cap-pill-pct">${pct(nBoth,total)}%</div>
+    </div>` : ''}
+  `;
+
+  const labels = nBoth > 0
+    ? ['129-ch Cap','32-ch Cap','Both Caps']
+    : ['129-ch Cap','32-ch Cap'];
+  const dataVals = nBoth > 0 ? [n129, n32, nBoth] : [n129, n32];
+  const bgColors = nBoth > 0
+    ? ['rgba(0,122,124,0.82)','rgba(109,40,217,0.82)','rgba(180,83,9,0.75)']
+    : ['rgba(0,122,124,0.82)','rgba(109,40,217,0.82)'];
+  const bdColors = nBoth > 0
+    ? ['#007a7c','#6d28d9','#b45309']
+    : ['#007a7c','#6d28d9'];
+
+  charts['128'] = new Chart(document.getElementById('c128'), {
+    type:'doughnut',
+    data:{
+      labels,
+      datasets:[{ data:dataVals, backgroundColor:bgColors, borderColor:bdColors, borderWidth:2, hoverOffset:6 }]
+    },
+    options:{
+      responsive:true,
+      cutout:'62%',
+      plugins:{
+        legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 }},
+        tooltip:{ callbacks:{ label: i => ` ${i.label}: ${i.raw} (${pct(i.raw, total)}%)` }}
+      }
     }
   });
 }
 
-/* CAP SIZE */
-function rCap() {
-  dc('cap');
-  const cd = rawData.filter(d => d.hc !== null && d.hc <= 61);
-  const bk = {};
-  cd.forEach(d => { const k = Math.floor(d.hc); bk[k] = (bk[k]||0)+1; });
-  const s = Object.entries(bk).sort((a,b)=>+a[0]-+b[0]);
-  charts['cap'] = new Chart(document.getElementById('cCap'), {
-    type:'bar',
-    data:{ labels: s.map(e=>e[0]+' cm'), datasets:[{ label:'Visits', data:s.map(e=>e[1]), backgroundColor:s.map((_,i)=>`hsla(${195+i*2},55%,${36+i*0.5}%,0.82)`), borderWidth:0, borderRadius:3 }]},
-    options:{ responsive:true, plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ title:i=>`HC: ${i[0].label}`, label:i=>`Sample size: ${i.raw} visits` }}},
-      scales:{ x:{ grid:{ display:false }, ticks:{ maxRotation:45 }}, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true, title:{ display:true, text:'Frequency (visits)', color:'#6b8299' }}}}
-  });
-}
-
-/* SEASONAL */
 function rSeasonal(fil) {
   dc('seas');
   const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -778,18 +846,12 @@ function rSeasonal(fil) {
     type:'line', data:{ labels:MN, datasets },
     options:{ responsive:true, interaction:{ mode:'index', intersect:false },
       plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:10, font:{size:11} }},
-        tooltip:{ callbacks:{ afterBody: items => {
-          const t = items.reduce((s,i)=>s+i.raw,0);
-          const mn = items[0].label;
-          const ss = ['Dec','Jan','Feb'].includes(mn)?'❄ Winter':['Mar','Apr','May'].includes(mn)?'🌸 Spring':['Jun','Jul','Aug'].includes(mn)?'☀ Summer':'🍂 Autumn';
-          return [`Total: ${t}   ${ss}`];
-        }}}},
+        tooltip:{ callbacks:{ afterBody: items => [`Total: ${items.reduce((s,i)=>s+i.raw,0)}`] }}},
       scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }}, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true }}
     }
   });
 }
 
-/* PYRAMID */
 function rPyramid(u) {
   dc('pyr');
   const labels = BUCKETS.map(b=>b[2]);
@@ -814,9 +876,6 @@ function rPyramid(u) {
   });
 }
 
-/* ══════════════════════════════════════════
-   MODALS
-══════════════════════════════════════════ */
 function openModal(t,b){ document.getElementById('mtitle').textContent=t; document.getElementById('mbody').innerHTML=b; document.getElementById('modal').classList.add('open'); }
 function closeModal(){ document.getElementById('modal').classList.remove('open'); }
 document.getElementById('modal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeModal(); });
@@ -824,12 +883,8 @@ document.getElementById('modal').addEventListener('click', e=>{ if(e.target===e.
 function drillAge(label, u) {
   const b = BUCKETS.find(b=>b[2]===label); if (!b) return;
   const g = u.filter(d=>d.age!==null&&d.age>=b[0]&&d.age<b[1]);
-  const tot = g.length||1;
-  const m = g.filter(d=>d.sex==='M').length;
-  const f = g.filter(d=>d.sex==='F').length;
-
-  // Diagnosis counts
-  const dc2 = {};
+  const tot=g.length||1, m=g.filter(d=>d.sex==='M').length, f=g.filter(d=>d.sex==='F').length;
+  const dc2={};
   g.forEach(d => { dc2[d.dx] = (dc2[d.dx]||0)+1; });
   const maxN = Math.max(...Object.values(dc2),1);
   const rows = DX_ORDER.filter(k=>dc2[k]).map(k => {
@@ -838,12 +893,10 @@ function drillAge(label, u) {
       <span class="dxname"><span class="dxdot" style="background:${info.color}"></span>${info.name}</span>
       <div class="dxright">
         <div class="dxbw"><div class="dxbf" style="width:${(n/maxN*100).toFixed(0)}%;background:${info.color}"></div></div>
-        <span class="dxcount">${n}</span>
-        <span class="dxpct">(${pct(n,tot)}%)</span>
+        <span class="dxcount">${n}</span><span class="dxpct">(${pct(n,tot)}%)</span>
       </div>
     </div>`;
   }).join('');
-
   openModal(`Age Group: ${label}`, `
     <div class="kpi-row">
       <div class="kpi"><div class="kv" style="color:var(--teal)">${g.length}</div><div class="kl">Total Participants</div></div>
@@ -855,11 +908,10 @@ function drillAge(label, u) {
 }
 
 function drillSex() {
-  const fil = rawData.filter(exclHC).filter(d=>filt([d]).length);
-  const u = uniqP(fil);
+  const fil=filt(rawData), u=uniqP(fil);
   const m=u.filter(d=>d.sex==='M'), f=u.filter(d=>d.sex==='F'), tot=u.length||1;
   const avg = arr => { const a=arr.map(d=>d.age).filter(Boolean); return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):'—'; };
-  const rows = [1,2,3,4].map(ph=>{
+  const rows=[1,2,3,4].map(ph=>{
     const pm=u.filter(d=>d.phase===ph&&d.sex==='M').length;
     const pf=u.filter(d=>d.phase===ph&&d.sex==='F').length;
     return `<tr><td>Phase ${ph}</td><td><span class="chip m">${pm}</span></td><td><span class="chip f">${pf}</span></td><td>${pm+pf}</td><td style="color:var(--text-muted);font-family:'IBM Plex Mono',monospace">${pm+pf?pct(pm,pm+pf):'—'}% M</td></tr>`;
@@ -874,9 +926,6 @@ function drillSex() {
     <table class="ptable"><tr><th>Phase</th><th>Male</th><th>Female</th><th>Total</th><th>Ratio</th></tr>${rows}</table>`);
 }
 
-/* ══════════════════════════════════════════
-   FILTER WIRING
-══════════════════════════════════════════ */
 document.querySelectorAll('[data-f]').forEach(btn => {
   btn.addEventListener('click', () => {
     const ft=btn.dataset.f, fv=btn.dataset.v;
