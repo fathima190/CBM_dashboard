@@ -25,6 +25,9 @@
   --unk:#4b6070; --unk-a:rgba(75,96,112,0.6);
   --text:#1a2b3c; --text-mid:#3d566e; --text-muted:#6b8299;
   --shadow:0 2px 12px rgba(13,33,55,0.10); --shadow-lg:0 8px 32px rgba(13,33,55,0.14);
+  --green-ok:#16a34a; --green-ok-l:#dcfce7;
+  --amber:#d97706; --amber-l:#fef3c7;
+  --red-flag:#dc2626; --red-flag-l:#fee2e2;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{font-size:14px;}
@@ -45,6 +48,15 @@ header{background:var(--navy);color:#fff;padding:0 32px;height:64px;display:flex
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 #last-updated{font-size:11px;color:#5a7a96;font-family:'IBM Plex Mono',monospace;}
 
+/* PAGE TABS */
+.page-tabs{background:var(--navy-mid);border-bottom:1px solid rgba(255,255,255,0.08);padding:0 32px;display:none;gap:0;}
+.page-tabs.visible{display:flex;}
+.ptab{padding:12px 20px;font-size:12px;font-weight:500;color:#7fa8c8;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-family:'IBM Plex Sans',sans-serif;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.ptab:hover{color:#e8f0f8;}
+.ptab.active{color:#5de0e3;border-bottom-color:#5de0e3;}
+.ptab-icon{font-size:14px;}
+.ptab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:rgba(93,224,227,0.18);color:#5de0e3;font-size:10px;font-family:'IBM Plex Mono',monospace;}
+
 #upload-section{max-width:640px;margin:60px auto;padding:0 32px;}
 .upload-card{background:#fff;border:2px dashed var(--border);border-radius:12px;padding:48px 40px;text-align:center;transition:all .2s;cursor:pointer;}
 .upload-card:hover,.upload-card.dragover{border-color:var(--teal);background:rgba(0,122,124,0.04);}
@@ -56,7 +68,6 @@ header{background:var(--navy);color:#fff;padding:0 32px;height:64px;display:flex
 #file-input{display:none;}
 .upload-formats{margin-top:16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);}
 .upload-error{margin-top:12px;padding:10px 16px;border-radius:6px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;font-size:13px;display:none;}
-
 .dx-key{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;justify-content:center;}
 .dx-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-family:'IBM Plex Mono',monospace;border:1px solid;font-weight:500;}
 
@@ -78,6 +89,7 @@ header{background:var(--navy);color:#fff;padding:0 32px;height:64px;display:flex
 .preview-table th{background:var(--panel2);padding:7px 10px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.5px;border-bottom:1px solid var(--border);position:sticky;top:0;}
 .preview-table td{padding:7px 10px;border-bottom:1px solid var(--panel2);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-mid);}
 
+/* === MAIN PAGE (overview) === */
 #dashboard{display:none;}
 
 .filters{background:#fff;border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:0 1px 4px rgba(13,33,55,0.06);}
@@ -118,7 +130,6 @@ select.fsel{padding:5px 10px;border-radius:4px;border:1px solid var(--border);ba
 .card-tag{font-size:9px;font-family:'IBM Plex Mono',monospace;padding:2px 7px;border-radius:3px;background:var(--panel2);color:var(--text-muted);border:1px solid var(--border);white-space:nowrap;}
 canvas{max-height:260px;width:100%!important;}
 
-/* Cap usage summary pills */
 .cap-summary{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
 .cap-pill{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--panel);}
 .cap-pill-dot{width:12px;height:12px;border-radius:50%;}
@@ -126,6 +137,115 @@ canvas{max-height:260px;width:100%!important;}
 .cap-pill-val{font-size:18px;font-weight:600;color:var(--text);line-height:1;}
 .cap-pill-pct{font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;}
 
+/* ===== PAGE 2 — LAST MONTH ===== */
+#page-lastmonth{display:none;padding-bottom:40px;}
+.lm-header{padding:24px 32px 0;}
+.lm-title{font-size:20px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:10px;}
+.lm-title-dot{width:10px;height:10px;border-radius:50%;background:var(--teal);animation:pulse 2s ease infinite;}
+.lm-sub{font-size:13px;color:var(--text-muted);margin-top:4px;font-family:'IBM Plex Mono',monospace;}
+.lm-month-picker{display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.lm-month-picker label{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;}
+.lm-month-picker input[type=month]{padding:6px 12px;border:1px solid var(--border);border-radius:5px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;color:var(--text);background:#fff;outline:none;cursor:pointer;}
+.lm-month-picker input[type=month]:focus{border-color:var(--teal);}
+
+.cohort-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px 32px 0;}
+.cohort-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px 22px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:box-shadow .15s;}
+.cohort-card:hover{box-shadow:var(--shadow-lg);}
+.cohort-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.cohort-card.dx160::before{background:var(--c160);}
+.cohort-card.dx150::before{background:var(--c150);}
+.cohort-card.dx140::before{background:var(--c140);}
+.cohort-card.dx130::before{background:var(--c130);}
+.cohort-card.dx120::before{background:var(--c120);}
+.cohort-card.dx110::before{background:var(--c110);}
+.cohort-card.dxunk::before{background:var(--cunk);}
+.cohort-code{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.cohort-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px;}
+.cohort-big{font-size:44px;font-weight:600;line-height:1;letter-spacing:-2px;margin-bottom:4px;}
+.cohort-label{font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;}
+.cohort-sub-row{display:flex;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--panel2);}
+.cohort-sub{display:flex;flex-direction:column;gap:2px;}
+.cohort-sub-val{font-size:16px;font-weight:600;line-height:1;}
+.cohort-sub-lbl{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);}
+.cohort-phase-row{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;}
+.phase-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:3px;background:var(--panel2);border:1px solid var(--border);font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-mid);}
+.phase-chip span{font-weight:600;}
+
+.lm-total-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:16px 32px 0;}
+.lm-kpi{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;}
+.lm-kpi-icon{font-size:28px;}
+.lm-kpi-val{font-size:28px;font-weight:600;line-height:1;letter-spacing:-.5px;}
+.lm-kpi-lbl{font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;}
+
+.lm-chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 32px 0;}
+
+.no-data-msg{padding:60px 32px;text-align:center;color:var(--text-muted);font-size:13px;font-family:'IBM Plex Mono',monospace;}
+
+/* ===== PAGE 3 — MONTHLY STATUS ===== */
+#page-status{display:none;padding-bottom:40px;}
+.ms-header{padding:24px 32px 0;}
+.ms-title{font-size:20px;font-weight:600;color:var(--text);}
+.ms-sub{font-size:13px;color:var(--text-muted);margin-top:4px;font-family:'IBM Plex Mono',monospace;}
+.ms-controls{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap;}
+.ms-controls label{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;}
+.ms-controls input[type=month],.ms-controls select{padding:6px 12px;border:1px solid var(--border);border-radius:5px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;color:var(--text);background:#fff;outline:none;}
+.ms-controls input[type=month]:focus,.ms-controls select:focus{border-color:var(--teal);}
+
+/* Phase status cards */
+.phase-status-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:20px 32px 0;}
+.phase-status-card{background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;}
+.psc-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--panel2);}
+.psc-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.psc-phase-badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:3px;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:500;background:var(--navy);color:#fff;}
+.psc-total{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);}
+.psc-body{padding:16px 20px;}
+
+/* Status legend */
+.status-legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:10px 14px;background:var(--panel2);border-radius:6px;border:1px solid var(--border);}
+.sl-item{display:flex;align-items:center;gap:6px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text-mid);}
+.sl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* Status table */
+.status-table{width:100%;border-collapse:collapse;font-size:12px;}
+.status-table th{text-align:left;padding:6px 10px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid var(--border);background:var(--panel);}
+.status-table td{padding:9px 10px;border-bottom:1px solid var(--panel2);vertical-align:middle;}
+.status-table tr:hover td{background:var(--panel);}
+.status-table tr:last-child td{border-bottom:none;}
+
+.st-dx-chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:3px;font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:500;}
+.st-count{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:13px;}
+.st-bar-wrap{width:80px;height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px;}
+.st-bar-fill{height:100%;border-radius:3px;}
+
+.status-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:3px;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:500;white-space:nowrap;}
+.tag-good{background:var(--green-ok-l);color:var(--green-ok);}
+.tag-warn{background:var(--amber-l);color:var(--amber);}
+.tag-pend{background:var(--panel2);color:var(--text-muted);border:1px solid var(--border);}
+
+/* Preprocess summary */
+.prep-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 32px 0;}
+.prep-kpi{background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px 18px;box-shadow:var(--shadow);}
+.prep-kpi-val{font-size:28px;font-weight:600;line-height:1;letter-spacing:-.5px;}
+.prep-kpi-lbl{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.8px;}
+.prep-kpi-sub{font-size:11px;color:var(--text-muted);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+
+/* Big status overview bar chart */
+.ms-chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 32px 0;}
+
+/* Notes / flags section for monthly status */
+.ms-flags{padding:16px 32px 0;}
+.flag-box{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px 22px;box-shadow:var(--shadow);}
+.flag-title{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.flag-rows{display:flex;flex-direction:column;gap:10px;}
+.flag-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:6px;font-size:12px;background:var(--panel2);border:1px solid var(--border);}
+.flag-row.ok{background:var(--green-ok-l);border-color:#bbf7d0;}
+.flag-row.warn{background:var(--amber-l);border-color:#fde68a;}
+.flag-row.info{background:#eff6ff;border-color:#bfdbfe;}
+.flag-icon{font-size:16px;flex-shrink:0;}
+.flag-text{color:var(--text-mid);line-height:1.5;}
+.flag-text strong{color:var(--text);}
+
+/* Modal */
 .moverlay{display:none;position:fixed;inset:0;background:rgba(13,33,55,0.55);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;}
 .moverlay.open{display:flex;}
 .modal{background:#fff;border-radius:10px;border:1px solid var(--border);padding:28px 30px;width:92%;max-width:700px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
@@ -167,6 +287,14 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
   .stats-strip{grid-template-columns:repeat(3,1fr);}
   .grid.g-2-1,.grid.g-3,.grid.g-2{grid-template-columns:1fr;}
   .mapper-grid{grid-template-columns:1fr;}
+  .cohort-grid{grid-template-columns:1fr 1fr;}
+  .phase-status-grid{grid-template-columns:1fr;}
+  .lm-total-strip,.prep-summary{grid-template-columns:repeat(2,1fr);}
+  .lm-chart-row,.ms-chart-row{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .cohort-grid{grid-template-columns:1fr;}
+  .lm-total-strip,.prep-summary{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
@@ -187,6 +315,21 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
   </div>
 </header>
 
+<!-- PAGE TABS (shown after data load) -->
+<div class="page-tabs" id="page-tabs">
+  <div class="ptab active" data-page="overview" onclick="switchPage('overview')">
+    <span class="ptab-icon">📊</span> Overview
+  </div>
+  <div class="ptab" data-page="lastmonth" onclick="switchPage('lastmonth')">
+    <span class="ptab-icon">📅</span> Last Month's Cohort
+    <span class="ptab-badge" id="lm-tab-badge">—</span>
+  </div>
+  <div class="ptab" data-page="status" onclick="switchPage('status')">
+    <span class="ptab-icon">⚙️</span> Monthly Status
+  </div>
+</div>
+
+<!-- UPLOAD -->
 <div id="upload-section">
   <div class="upload-card" id="drop-zone">
     <div class="upload-icon">📊</div>
@@ -210,10 +353,12 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
   </div>
 </div>
 
+<!-- MAPPER -->
 <div id="mapper-section">
   <div class="mapper-card">
     <div class="mapper-title">Map Your Column Names</div>
-    <div class="mapper-sub">Match your spreadsheet columns to the fields below. Diagnosis will be auto-extracted from digits 4–6 of the Assessment Number — no separate diagnosis column needed.</div>
+    <div class="mapper-sub">Match your spreadsheet columns to the fields below. Diagnosis will be auto-extracted from digits 4–6 of the Assessment Number — no separate diagnosis column needed.<br><br>
+      <strong>For Monthly Status page:</strong> optionally map a <em>Status</em> column (values like "useful", "good", "preprocess", "pending", "exclude", "bad" etc.) to track data quality per participant.</div>
     <div class="info-box">
       Assessment No structure: &nbsp;<strong>XXX</strong> YYY ZZZ<br>
       &nbsp;&nbsp;Digits 1–3 (<strong>XXX</strong>) = Phase &nbsp;|&nbsp; Digits 4–6 (<strong>YYY</strong>) = Diagnosis &nbsp;|&nbsp; Digits 7–9 (<strong>ZZZ</strong>) = Participant ID<br>
@@ -225,6 +370,7 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
   </div>
 </div>
 
+<!-- ===== PAGE 1: OVERVIEW ===== -->
 <div id="dashboard">
   <div class="filters">
     <span class="flabel">Diagnosis</span>
@@ -344,6 +490,118 @@ footer{text-align:center;padding:20px 32px;font-size:11px;color:var(--text-muted
   </div>
 </div>
 
+<!-- ===== PAGE 2: LAST MONTH'S COHORT ===== -->
+<div id="page-lastmonth">
+  <div class="lm-header">
+    <div class="lm-title"><div class="lm-title-dot"></div>Last Month's Cohort Snapshot</div>
+    <div class="lm-sub" id="lm-sub-text">Participants seen — broken down by cohort/diagnosis</div>
+    <div class="lm-month-picker">
+      <label>Viewing month:</label>
+      <input type="month" id="lm-month-input">
+      <span style="font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text-muted)">← change to browse any month</span>
+    </div>
+  </div>
+
+  <!-- KPI strip -->
+  <div class="lm-total-strip" id="lm-kpi-strip">
+    <div class="lm-kpi"><span class="lm-kpi-icon">👥</span><div><div class="lm-kpi-val" id="lm-k-total">—</div><div class="lm-kpi-lbl">Total participants</div></div></div>
+    <div class="lm-kpi"><span class="lm-kpi-icon">🆕</span><div><div class="lm-kpi-val" id="lm-k-new">—</div><div class="lm-kpi-lbl">New (first visit ever)</div></div></div>
+    <div class="lm-kpi"><span class="lm-kpi-icon">🔄</span><div><div class="lm-kpi-val" id="lm-k-return">—</div><div class="lm-kpi-lbl">Return visits</div></div></div>
+    <div class="lm-kpi"><span class="lm-kpi-icon">🧬</span><div><div class="lm-kpi-val" id="lm-k-cohorts">—</div><div class="lm-kpi-lbl">Active cohorts</div></div></div>
+  </div>
+
+  <!-- Cohort cards -->
+  <div class="cohort-grid" id="cohort-grid">
+    <div class="no-data-msg" style="grid-column:span 3">Select a month with data to see cohort breakdown.</div>
+  </div>
+
+  <!-- Charts -->
+  <div class="lm-chart-row">
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">Cohort Distribution This Month</div><div class="card-hint">Unique participants per diagnosis group</div></div>
+        <span class="card-tag">MONTH VIEW</span>
+      </div>
+      <canvas id="cLmDx" style="max-height:220px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">Phase Breakdown This Month</div><div class="card-hint">All assessments in selected month</div></div>
+        <span class="card-tag">MONTH VIEW</span>
+      </div>
+      <canvas id="cLmPhase" style="max-height:220px"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 3: MONTHLY STATUS ===== -->
+<div id="page-status">
+  <div class="ms-header">
+    <div class="ms-title">⚙️ Monthly Processing Status</div>
+    <div class="ms-sub">Track preprocessing pipeline — useful data vs needs preprocessing — per phase and cohort</div>
+    <div class="ms-controls">
+      <label>Month:</label>
+      <input type="month" id="ms-month-input">
+      <label style="margin-left:8px">Phase:</label>
+      <select id="ms-phase-sel">
+        <option value="all">All Phases</option>
+        <option value="1">Phase 1</option>
+        <option value="2">Phase 2</option>
+        <option value="3">Phase 3</option>
+        <option value="4">Phase 4</option>
+      </select>
+    </div>
+    <div style="margin-top:12px;padding:10px 14px;background:var(--panel2);border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text-mid);font-family:'IBM Plex Mono',monospace;line-height:1.8;max-width:700px;">
+      <strong style="color:var(--teal)">Status column mapping:</strong> map a column with values like<br>
+      <span style="color:var(--green-ok)">■</span> <strong>useful / good / ok / done</strong> → Useful Data &nbsp;|&nbsp;
+      <span style="color:var(--amber)">■</span> <strong>preprocess / process / redo / partial</strong> → Needs Preprocessing &nbsp;|&nbsp;
+      <span style="color:var(--red-flag)">■</span> <strong>exclude / bad / reject</strong> → Excluded &nbsp;|&nbsp;
+      <span style="color:var(--text-muted)">■</span> <strong>(empty / other)</strong> → Pending
+    </div>
+  </div>
+
+  <!-- Summary KPIs -->
+  <div class="prep-summary" id="prep-summary">
+    <div class="prep-kpi"><div class="prep-kpi-val" id="ps-k-total" style="color:var(--teal)">—</div><div class="prep-kpi-lbl">Total Assessments</div><div class="prep-kpi-sub">this month / phase</div></div>
+    <div class="prep-kpi"><div class="prep-kpi-val" id="ps-k-useful" style="color:var(--green-ok)">—</div><div class="prep-kpi-lbl">Useful Data</div><div class="prep-kpi-sub" id="ps-k-useful-pct">ready for analysis</div></div>
+    <div class="prep-kpi"><div class="prep-kpi-val" id="ps-k-prep" style="color:var(--amber)">—</div><div class="prep-kpi-lbl">Need Preprocessing</div><div class="prep-kpi-sub" id="ps-k-prep-pct">to be processed</div></div>
+    <div class="prep-kpi"><div class="prep-kpi-val" id="ps-k-pend" style="color:var(--text-muted)">—</div><div class="prep-kpi-lbl">Pending / Unknown</div><div class="prep-kpi-sub" id="ps-k-pend-pct">not yet assessed</div></div>
+  </div>
+
+  <!-- Phase cards with status table -->
+  <div class="phase-status-grid" id="phase-status-grid">
+    <div class="no-data-msg" style="grid-column:span 2">Select a month to view processing status.</div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="ms-chart-row">
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">Status by Diagnosis — This Month</div><div class="card-hint">Stacked bar: useful vs preprocess vs excluded vs pending</div></div>
+        <span class="card-tag">STATUS</span>
+      </div>
+      <canvas id="cMsDx" style="max-height:240px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-hdr">
+        <div><div class="card-title">Monthly Status Trend</div><div class="card-hint">Useful data % across months (last 12)</div></div>
+        <span class="card-tag">TREND</span>
+      </div>
+      <canvas id="cMsTrend" style="max-height:240px"></canvas>
+    </div>
+  </div>
+
+  <!-- Flags / insights -->
+  <div class="ms-flags">
+    <div class="flag-box">
+      <div class="flag-title">📌 Status Insights &amp; Flags</div>
+      <div class="flag-rows" id="ms-flag-rows">
+        <div class="flag-row info"><span class="flag-icon">ℹ️</span><div class="flag-text">Load data and select a month to see processing flags and insights.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="upload-footer">
   <span class="uf-label">Currently loaded:</span>
   <span class="uf-filename" id="uf-name">—</span>
@@ -371,13 +629,13 @@ const DX_INFO = {
   'UNK': { name:'Unknown',         color:'#4b6070', colorA:'rgba(75,96,112,0.6)',   light:'rgba(75,96,112,0.1)' },
 };
 const DX_ORDER = ['160','150','140','130','120','110','UNK'];
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 function getDxFromAssessment(aNo) {
   const s = String(aNo || '').trim().replace(/\s/g, '');
   if (s.length >= 6) { const code = s.substring(3, 6); if (DX_INFO[code]) return code; }
   return 'UNK';
 }
-
 function getPhase(aNo) {
   const s = String(aNo || '').trim().replace(/\s/g, '');
   const p = s.substring(0, 3);
@@ -386,6 +644,14 @@ function getPhase(aNo) {
   if (['121','122'].includes(p)) return 3;
   if (['131','132'].includes(p)) return 4;
   return null;
+}
+function classifyStatus(raw) {
+  if (!raw) return 'pending';
+  const v = String(raw).trim().toLowerCase();
+  if (/^(useful|good|ok|done|complete|yes|1|ready|analyzed|analysed)/.test(v)) return 'useful';
+  if (/^(preprocess|process|redo|partial|artifact|artefact|noise|ica|filter|reprocess|needs)/.test(v)) return 'preprocess';
+  if (/^(exclude|bad|reject|unusable|discard|remove|0)/.test(v)) return 'excluded';
+  return 'pending';
 }
 
 let rawData = [], charts = {}, colMap = {}, uploadedFilename = '';
@@ -399,6 +665,7 @@ const FIELDS = [
   { key:'head_circ',     label:'Head Circumference (cm)',  auto:['head_circumference','head_circ','hc','headcirc','head circumference'] },
   { key:'date',          label:'Visit Date (optional)',     auto:['date','visit_date','assessment_date','date_of_assessment'] },
   { key:'col_128',       label:'Column "128" (1=129ch / 0=32ch)', auto:['128'] },
+  { key:'status',        label:'Data Status (useful/preprocess/pending…)', auto:['status','data_status','eeg_status','quality','data_quality','flag'] },
 ];
 
 function handleFile(file) {
@@ -425,517 +692,575 @@ function handleFile(file) {
     reader.readAsText(file);
   }
 }
-
 function showUploadError(msg) {
   const el = document.getElementById('upload-error');
-  el.style.display = 'block'; el.textContent = msg;
+  el.style.display='block'; el.textContent=msg;
 }
 
 const dz = document.getElementById('drop-zone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
-document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
-document.getElementById('file-input2').addEventListener('change', e => handleFile(e.target.files[0]));
+dz.addEventListener('dragover', e=>{e.preventDefault();dz.classList.add('dragover');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dragover');handleFile(e.dataTransfer.files[0]);});
+document.getElementById('file-input').addEventListener('change',e=>handleFile(e.target.files[0]));
+document.getElementById('file-input2').addEventListener('change',e=>handleFile(e.target.files[0]));
 
-let parsedRows = [];
-function showMapper(rows) {
-  parsedRows = rows;
-  const columns = Object.keys(rows[0] || {});
-  const detected = {};
-  FIELDS.forEach(f => {
-    const match = f.auto.find(a => columns.find(c => c.trim().toLowerCase() === a));
-    detected[f.key] = match ? columns.find(c => c.trim().toLowerCase() === match) : '';
+let parsedRows=[];
+function showMapper(rows){
+  parsedRows=rows;
+  const columns=Object.keys(rows[0]||{});
+  const detected={};
+  FIELDS.forEach(f=>{
+    const match=f.auto.find(a=>columns.find(c=>c.trim().toLowerCase()===a));
+    detected[f.key]=match?columns.find(c=>c.trim().toLowerCase()===match):'';
   });
-
-  const previewRows = rows.slice(0, 5);
-  let th = columns.map(c => `<th>${c}</th>`).join('');
-  let trs = previewRows.map(r => `<tr>${columns.map(c => `<td>${String(r[c]||'').substring(0,25)}</td>`).join('')}</tr>`).join('');
-  document.getElementById('preview-wrap').innerHTML = `<table class="preview-table"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
-
-  document.getElementById('mapper-grid').innerHTML = FIELDS.map(f => `
+  const previewRows=rows.slice(0,5);
+  let th=columns.map(c=>`<th>${c}</th>`).join('');
+  let trs=previewRows.map(r=>`<tr>${columns.map(c=>`<td>${String(r[c]||'').substring(0,25)}</td>`).join('')}</tr>`).join('');
+  document.getElementById('preview-wrap').innerHTML=`<table class="preview-table"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
+  document.getElementById('mapper-grid').innerHTML=FIELDS.map(f=>`
     <div class="mapper-row">
       <span class="mapper-label">${f.label}</span>
       <select class="mapper-select" id="map-${f.key}">
         <option value="">— not present —</option>
-        ${columns.map(c => `<option value="${c}"${detected[f.key]===c?' selected':''}>${c}</option>`).join('')}
+        ${columns.map(c=>`<option value="${c}"${detected[f.key]===c?' selected':''}>${c}</option>`).join('')}
       </select>
     </div>`).join('');
-
-  document.getElementById('upload-section').style.display = 'none';
-  document.getElementById('mapper-section').style.display = 'block';
+  document.getElementById('upload-section').style.display='none';
+  document.getElementById('mapper-section').style.display='block';
 }
 
-function confirmMapping() {
-  FIELDS.forEach(f => { colMap[f.key] = document.getElementById('map-' + f.key).value; });
-  rawData = normalise(parsedRows);
-  if (!rawData.length) { alert('No data rows found. Please check your column selections.'); return; }
-  document.getElementById('mapper-section').style.display = 'none';
+function confirmMapping(){
+  FIELDS.forEach(f=>{colMap[f.key]=document.getElementById('map-'+f.key).value;});
+  rawData=normalise(parsedRows);
+  if(!rawData.length){alert('No data rows found.');return;}
+  document.getElementById('mapper-section').style.display='none';
   showDashboard();
 }
 
-function normalise(rows) {
-  return rows.map(r => {
-    const g = k => String(r[colMap[k]] === undefined ? '' : r[colMap[k]] || '').trim();
-    const aNo    = g('assessment_no');
-    const adbs   = g('adbs_no');
-    const rs     = g('sex');
-    const sex    = rs.toUpperCase().startsWith('M') ? 'M' : rs.toUpperCase().startsWith('F') ? 'F' : 'U';
-    const age    = parseFloat(g('age'));
-    const hcRaw  = g('head_circ');
-    const hc     = hcRaw === '' ? null : parseFloat(hcRaw);
-    const dateRaw = g('date');
-
-    // Parse 128 column: 1 → 129-ch cap, 0 → 32-ch cap
-    const raw128 = g('col_128');
-    let capType = null; // null = no data, '129' = 129-ch, '32' = 32-ch
-    if (raw128 !== '') {
-      const n = parseFloat(raw128);
-      if (!isNaN(n)) capType = n === 1 ? '129' : (n === 0 ? '32' : null);
-    }
-
-    let dateObj = null;
-    if (dateRaw) {
-      const n = parseFloat(dateRaw);
-      if (!isNaN(n) && n > 40000 && n < 60000) {
-        dateObj = new Date(Math.round((n - 25569) * 86400 * 1000));
+function normalise(rows){
+  return rows.map(r=>{
+    const g=k=>String(r[colMap[k]]===undefined?'':r[colMap[k]]||'').trim();
+    const aNo=g('assessment_no');
+    const adbs=g('adbs_no');
+    const rs=g('sex');
+    const sex=rs.toUpperCase().startsWith('M')?'M':rs.toUpperCase().startsWith('F')?'F':'U';
+    const age=parseFloat(g('age'));
+    const hcRaw=g('head_circ');
+    const hc=hcRaw===''?null:parseFloat(hcRaw);
+    const dateRaw=g('date');
+    const statusRaw=g('status');
+    const raw128=g('col_128');
+    let capType=null;
+    if(raw128!==''){const n=parseFloat(raw128);if(!isNaN(n)) capType=n===1?'129':(n===0?'32':null);}
+    let dateObj=null;
+    if(dateRaw){
+      const n=parseFloat(dateRaw);
+      if(!isNaN(n)&&n>40000&&n<60000){
+        // Excel serial date
+        dateObj=new Date(Math.round((n-25569)*86400*1000));
       } else {
-        const d = new Date(dateRaw);
-        if (!isNaN(d)) dateObj = d;
+        // Try DD-MM-YYYY first (your format), also handles DD/MM/YYYY
+        const dmyMatch=String(dateRaw).trim().match(/^(\d{1,2})[-\/\.](\d{1,2})[-\/\.](\d{4})$/);
+        if(dmyMatch){
+          const [,dd,mm,yyyy]=dmyMatch;
+          dateObj=new Date(parseInt(yyyy),parseInt(mm)-1,parseInt(dd));
+          if(isNaN(dateObj)) dateObj=null;
+        } else {
+          // Fallback: try DD-MM-YY
+          const dmyShort=String(dateRaw).trim().match(/^(\d{1,2})[-\/\.](\d{1,2})[-\/\.](\d{2})$/);
+          if(dmyShort){
+            const [,dd,mm,yy]=dmyShort;
+            const yyyy=parseInt(yy)<50?2000+parseInt(yy):1900+parseInt(yy);
+            dateObj=new Date(yyyy,parseInt(mm)-1,parseInt(dd));
+            if(isNaN(dateObj)) dateObj=null;
+          } else {
+            // Last resort: native parse (works for ISO YYYY-MM-DD)
+            const d=new Date(dateRaw);
+            if(!isNaN(d)) dateObj=d;
+          }
+        }
       }
     }
-
-    const dx  = getDxFromAssessment(aNo);
-    const pid = adbs || (aNo.length >= 9 ? aNo.substring(3) : aNo);
-
+    const dx=getDxFromAssessment(aNo);
+    const pid=adbs||(aNo.length>=9?aNo.substring(3):aNo);
     return {
       aNo, pid, sex,
-      age:     isNaN(age) ? null : age,
-      hc:      (hc === null || isNaN(hc)) ? null : hc,
-      capType,
-      dx,
-      dxName:  DX_INFO[dx]?.name || 'Unknown',
-      phase:   getPhase(aNo),
+      age:isNaN(age)?null:age,
+      hc:(hc===null||isNaN(hc))?null:hc,
+      capType, dx,
+      dxName:DX_INFO[dx]?.name||'Unknown',
+      phase:getPhase(aNo),
       dateObj,
-      year:    dateObj ? dateObj.getFullYear() : null,
-      month:   dateObj ? dateObj.getMonth()    : null,
+      year:dateObj?dateObj.getFullYear():null,
+      month:dateObj?dateObj.getMonth():null,
+      status:classifyStatus(statusRaw),
+      statusRaw,
     };
   });
 }
 
-function showDashboard() {
-  document.getElementById('dashboard').style.display = 'block';
-  document.getElementById('upload-footer').style.display = 'flex';
-  document.getElementById('uf-name').textContent = uploadedFilename;
+function showDashboard(){
+  document.getElementById('dashboard').style.display='block';
+  document.getElementById('upload-footer').style.display='flex';
+  document.getElementById('uf-name').textContent=uploadedFilename;
+  document.getElementById('page-tabs').classList.add('visible');
 
-  const sb = document.getElementById('status-badge');
-  sb.className = 'badge live'; sb.innerHTML = '<span class="pulse"></span>DATA LOADED'; sb.style.display = '';
-  document.getElementById('rec-badge').style.display = '';
-  document.getElementById('last-updated').style.display = '';
+  const sb=document.getElementById('status-badge');
+  sb.className='badge live';sb.innerHTML='<span class="pulse"></span>DATA LOADED';sb.style.display='';
+  document.getElementById('rec-badge').style.display='';
+  document.getElementById('last-updated').style.display='';
 
-  const years = [...new Set(rawData.map(d => d.year).filter(Boolean))].sort();
-  const sel = document.getElementById('yr-sel');
-  sel.innerHTML = '<option value="all">All Years</option>';
-  years.forEach(y => { const o = document.createElement('option'); o.value = y; o.textContent = y; sel.appendChild(o); });
+  const years=[...new Set(rawData.map(d=>d.year).filter(Boolean))].sort();
+  const sel=document.getElementById('yr-sel');
+  sel.innerHTML='<option value="all">All Years</option>';
+  years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;sel.appendChild(o);});
+
+  // Set default month pickers to last month
+  const now=new Date();
+  const lm=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const lmStr=`${lm.getFullYear()}-${String(lm.getMonth()+1).padStart(2,'0')}`;
+  document.getElementById('lm-month-input').value=lmStr;
+  document.getElementById('ms-month-input').value=lmStr;
 
   renderAll();
-  document.getElementById('last-updated').textContent = `Loaded: ${new Date().toLocaleTimeString()}`;
-  document.getElementById('dashboard').scrollIntoView({ behavior:'smooth' });
+  renderLastMonth();
+  renderMonthlyStatus();
+
+  document.getElementById('last-updated').textContent=`Loaded: ${new Date().toLocaleTimeString()}`;
+  document.getElementById('dashboard').scrollIntoView({behavior:'smooth'});
 }
 
-Chart.defaults.font.family = "'IBM Plex Sans',sans-serif";
-Chart.defaults.font.size   = 12;
-Chart.defaults.color       = '#6b8299';
-Chart.defaults.borderColor = '#cdd9e8';
-Chart.defaults.plugins.tooltip.backgroundColor = '#0d2137';
-Chart.defaults.plugins.tooltip.titleColor      = '#e8f0f8';
-Chart.defaults.plugins.tooltip.bodyColor       = '#7fa8c8';
-Chart.defaults.plugins.tooltip.borderColor     = '#163656';
-Chart.defaults.plugins.tooltip.borderWidth     = 1;
-Chart.defaults.plugins.tooltip.padding         = 12;
-Chart.defaults.plugins.tooltip.cornerRadius    = 6;
+// ========== PAGE SWITCHING ==========
+function switchPage(page){
+  ['overview','lastmonth','status'].forEach(p=>{
+    document.getElementById(p==='overview'?'dashboard':`page-${p}`).style.display='none';
+    document.querySelector(`[data-page="${p}"]`).classList.remove('active');
+  });
+  if(page==='overview') document.getElementById('dashboard').style.display='block';
+  else document.getElementById(`page-${page}`).style.display='block';
+  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+}
 
-const BUCKETS = [[0,10,'0–9'],[10,20,'10–19'],[20,30,'20–29'],[30,40,'30–39'],[40,50,'40–49'],[50,60,'50–59'],[60,70,'60–69'],[70,80,'70–79'],[80,200,'80+']];
-function bkt(a) { for (const [lo,hi,l] of BUCKETS) if (a>=lo && a<hi) return l; return '?'; }
+// ========== OVERVIEW CHARTS ==========
+Chart.defaults.font.family="'IBM Plex Sans',sans-serif";
+Chart.defaults.font.size=12;
+Chart.defaults.color='#6b8299';
+Chart.defaults.borderColor='#cdd9e8';
+Chart.defaults.plugins.tooltip.backgroundColor='#0d2137';
+Chart.defaults.plugins.tooltip.titleColor='#e8f0f8';
+Chart.defaults.plugins.tooltip.bodyColor='#7fa8c8';
+Chart.defaults.plugins.tooltip.borderColor='#163656';
+Chart.defaults.plugins.tooltip.borderWidth=1;
+Chart.defaults.plugins.tooltip.padding=12;
+Chart.defaults.plugins.tooltip.cornerRadius=6;
 
-function filt(data) {
-  return data.filter(d => {
-    if (AF.dx    !== 'all' && d.dx          !== AF.dx)    return false;
-    if (AF.phase !== 'all' && String(d.phase) !== AF.phase) return false;
-    if (AF.year  !== 'all' && String(d.year)  !== AF.year)  return false;
-    if (AF.sex   !== 'all' && d.sex           !== AF.sex)   return false;
+const BUCKETS=[[0,10,'0–9'],[10,20,'10–19'],[20,30,'20–29'],[30,40,'30–39'],[40,50,'40–49'],[50,60,'50–59'],[60,70,'60–69'],[70,80,'70–79'],[80,200,'80+']];
+function bkt(a){for(const[lo,hi,l]of BUCKETS)if(a>=lo&&a<hi)return l;return '?';}
+function filt(data){
+  return data.filter(d=>{
+    if(AF.dx!=='all'&&d.dx!==AF.dx)return false;
+    if(AF.phase!=='all'&&String(d.phase)!==AF.phase)return false;
+    if(AF.year!=='all'&&String(d.year)!==AF.year)return false;
+    if(AF.sex!=='all'&&d.sex!==AF.sex)return false;
     return true;
   });
 }
-
-/* Unique participant deduplication — keep earliest phase record per pid */
-function uniqP(data) {
-  const m = new Map();
-  data.forEach(d => {
-    if (!d.pid) return;
-    if (!m.has(d.pid) || (d.phase||99) < (m.get(d.pid).phase||99)) m.set(d.pid, d);
-  });
-  return [...m.values()];
+function uniqP(data){
+  const m=new Map();
+  data.forEach(d=>{if(!d.pid)return;if(!m.has(d.pid)||(d.phase||99)<(m.get(d.pid).phase||99))m.set(d.pid,d);});
+  return[...m.values()];
 }
-
-/*
-  For the cap chart we need special deduplication logic:
-  A participant might appear in multiple phases. We want to know which cap type
-  they EVER used — if they used 129-ch in any visit, count as 129-ch.
-  If they only ever used 32-ch, count as 32-ch.
-  If no data at all, exclude from the chart.
-*/
-function uniqPCapType(data) {
-  // Build map: pid → Set of capTypes across all (filtered) visits
-  const pidCaps = new Map();
-  data.forEach(d => {
-    if (!d.pid || d.capType === null) return;
-    if (!pidCaps.has(d.pid)) pidCaps.set(d.pid, new Set());
-    pidCaps.get(d.pid).add(d.capType);
-  });
-
-  const result = { '129': 0, '32': 0, both: 0 };
-  pidCaps.forEach(caps => {
-    const has129 = caps.has('129');
-    const has32  = caps.has('32');
-    if (has129 && has32) { result.both++; }
-    else if (has129)     { result['129']++; }
-    else if (has32)      { result['32']++; }
-  });
+function uniqPCapType(data){
+  const pidCaps=new Map();
+  data.forEach(d=>{if(!d.pid||d.capType===null)return;if(!pidCaps.has(d.pid))pidCaps.set(d.pid,new Set());pidCaps.get(d.pid).add(d.capType);});
+  const result={'129':0,'32':0,both:0};
+  pidCaps.forEach(caps=>{const has129=caps.has('129'),has32=caps.has('32');if(has129&&has32)result.both++;else if(has129)result['129']++;else if(has32)result['32']++;});
   return result;
 }
+function med(arr){if(!arr.length)return null;const s=[...arr].sort((a,b)=>a-b);return s[Math.floor(s.length/2)];}
+function pct(n,t){return t?((n/t)*100).toFixed(1):'0.0';}
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
 
-function med(arr) { if (!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); return s[Math.floor(s.length/2)]; }
-function pct(n,t) { return t ? ((n/t)*100).toFixed(1) : '0.0'; }
-function dc(id)   { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
-
-function renderAll() {
-  const fil = filt(rawData);
-  const u   = uniqP(fil);
-  doStats(fil, u);
-  rAge(u);
-  rSex(u);
-  rPhase(fil);
-  rDx(u);
-  rDxBar(u);
-  rCap(rawData);
-  r128(fil);
-  rSeasonal(fil);
-  rPyramid(u);
+function renderAll(){
+  const fil=filt(rawData),u=uniqP(fil);
+  doStats(fil,u);rAge(u);rSex(u);rPhase(fil);rDx(u);rDxBar(u);rCap(rawData);r128(fil);rSeasonal(fil);rPyramid(u);
 }
 
-function doStats(fil, u) {
-  const ex = rawData.filter(d => d.hc !== null && d.hc > 61).length;
-  const pm = {};
-  fil.forEach(d => { if (!d.pid) return; if (!pm[d.pid]) pm[d.pid] = new Set(); if (d.phase) pm[d.pid].add(d.phase); });
-  const ml = Object.values(pm).filter(s => s.size > 1).length;
-  const m  = med(u.map(d => d.age).filter(a => a !== null));
-  document.getElementById('s-uniq').textContent  = u.length;
-  document.getElementById('s-total').textContent = fil.length;
-  document.getElementById('s-sex').textContent   = `${u.filter(d=>d.sex==='M').length} / ${u.filter(d=>d.sex==='F').length}`;
-  document.getElementById('s-age').textContent   = m !== null ? m.toFixed(1) : '—';
-  document.getElementById('s-excl').textContent  = ex;
-  document.getElementById('s-multi').textContent = ml;
-  document.getElementById('rec-badge').textContent = `${rawData.length} records`;
+function doStats(fil,u){
+  const ex=rawData.filter(d=>d.hc!==null&&d.hc>61).length;
+  const pm={};
+  fil.forEach(d=>{if(!d.pid)return;if(!pm[d.pid])pm[d.pid]=new Set();if(d.phase)pm[d.pid].add(d.phase);});
+  const ml=Object.values(pm).filter(s=>s.size>1).length;
+  const m=med(u.map(d=>d.age).filter(a=>a!==null));
+  document.getElementById('s-uniq').textContent=u.length;
+  document.getElementById('s-total').textContent=fil.length;
+  document.getElementById('s-sex').textContent=`${u.filter(d=>d.sex==='M').length} / ${u.filter(d=>d.sex==='F').length}`;
+  document.getElementById('s-age').textContent=m!==null?m.toFixed(1):'—';
+  document.getElementById('s-excl').textContent=ex;
+  document.getElementById('s-multi').textContent=ml;
+  document.getElementById('rec-badge').textContent=`${rawData.length} records`;
 }
 
-function rAge(u) {
-  dc('age');
-  const labels = BUCKETS.map(b=>b[2]);
-  const bm={}, bf={}, bo={};
-  labels.forEach(l => { bm[l]=0; bf[l]=0; bo[l]=0; });
-  u.forEach(d => {
-    if (d.age === null) return;
-    const b = bkt(d.age);
-    if (d.sex==='M') bm[b]++; else if (d.sex==='F') bf[b]++; else bo[b]++;
-  });
-  charts['age'] = new Chart(document.getElementById('cAge'), {
-    type:'bar',
-    data:{ labels, datasets:[
-      { label:'Male',    data:labels.map(l=>bm[l]), backgroundColor:'rgba(26,111,168,0.82)', borderColor:'#1a6fa8', borderWidth:1, borderRadius:2 },
-      { label:'Female',  data:labels.map(l=>bf[l]), backgroundColor:'rgba(181,68,110,0.82)', borderColor:'#b5446e', borderWidth:1, borderRadius:2 },
-      { label:'Unknown', data:labels.map(l=>bo[l]), backgroundColor:'rgba(75,96,112,0.6)',   borderColor:'#4b6070', borderWidth:1, borderRadius:2 },
-    ]},
-    options:{ responsive:true,
-      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:14 }},
-        tooltip:{ callbacks:{ afterBody: items => {
-          const b = BUCKETS.find(b=>b[2]===items[0].label);
-          const n = u.filter(d=>d.age!==null&&d.age>=b[0]&&d.age<b[1]).length;
-          return [`Total in group: ${n}`, '↗ Click to drill'];
-        }}}},
-      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }}, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true }},
-      onClick:(_,els) => { if (els.length) drillAge(labels[els[0].index], u); }
-    }
-  });
+function rAge(u){
+  dc('age');const labels=BUCKETS.map(b=>b[2]);
+  const bm={},bf={},bo={};
+  labels.forEach(l=>{bm[l]=0;bf[l]=0;bo[l]=0;});
+  u.forEach(d=>{if(d.age===null)return;const b=bkt(d.age);if(d.sex==='M')bm[b]++;else if(d.sex==='F')bf[b]++;else bo[b]++;});
+  charts['age']=new Chart(document.getElementById('cAge'),{type:'bar',data:{labels,datasets:[
+    {label:'Male',data:labels.map(l=>bm[l]),backgroundColor:'rgba(26,111,168,0.82)',borderColor:'#1a6fa8',borderWidth:1,borderRadius:2},
+    {label:'Female',data:labels.map(l=>bf[l]),backgroundColor:'rgba(181,68,110,0.82)',borderColor:'#b5446e',borderWidth:1,borderRadius:2},
+    {label:'Unknown',data:labels.map(l=>bo[l]),backgroundColor:'rgba(75,96,112,0.6)',borderColor:'#4b6070',borderWidth:1,borderRadius:2},
+  ]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14}},
+    tooltip:{callbacks:{afterBody:items=>{const b=BUCKETS.find(b=>b[2]===items[0].label);const n=u.filter(d=>d.age!==null&&d.age>=b[0]&&d.age<b[1]).length;return[`Total in group: ${n}`,'↗ Click to drill'];}}}},
+    scales:{x:{grid:{color:'rgba(13,33,55,0.05)'}},y:{grid:{color:'rgba(13,33,55,0.05)'},beginAtZero:true}},
+    onClick:(_,els)=>{if(els.length)drillAge(labels[els[0].index],u);}}});
 }
 
-function rSex(u) {
-  dc('sex');
-  const m=u.filter(d=>d.sex==='M').length, f=u.filter(d=>d.sex==='F').length, uu=u.length-m-f;
-  charts['sex'] = new Chart(document.getElementById('cSex'), {
-    type:'doughnut',
-    data:{ labels:['Male','Female','Unknown'], datasets:[{ data:[m,f,uu], backgroundColor:['rgba(26,111,168,0.82)','rgba(181,68,110,0.82)','rgba(75,96,112,0.6)'], borderColor:['#1a6fa8','#b5446e','#4b6070'], borderWidth:2, hoverOffset:6 }]},
-    options:{ responsive:true, cutout:'62%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 }}, tooltip:{ callbacks:{ label: i => ` ${i.label}: ${i.raw} (${pct(i.raw,u.length)}%)` }}}}
-  });
+function rSex(u){
+  dc('sex');const m=u.filter(d=>d.sex==='M').length,f=u.filter(d=>d.sex==='F').length,uu=u.length-m-f;
+  charts['sex']=new Chart(document.getElementById('cSex'),{type:'doughnut',data:{labels:['Male','Female','Unknown'],datasets:[{data:[m,f,uu],backgroundColor:['rgba(26,111,168,0.82)','rgba(181,68,110,0.82)','rgba(75,96,112,0.6)'],borderColor:['#1a6fa8','#b5446e','#4b6070'],borderWidth:2,hoverOffset:6}]},
+    options:{responsive:true,cutout:'62%',plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:14}},tooltip:{callbacks:{label:i=>` ${i.label}: ${i.raw} (${pct(i.raw,u.length)}%)`}}}}});
 }
 
-function rPhase(fil) {
-  dc('phase');
-  const phases = [1,2,3,4];
-  const datasets = DX_ORDER.filter(k=>k!=='UNK').map(k => ({
-    label: DX_INFO[k].name, backgroundColor: DX_INFO[k].colorA, borderWidth:0, borderRadius:2,
-    data: phases.map(ph => fil.filter(d => d.phase===ph && d.dx===k).length)
-  }));
-  datasets.push({ label:'Unknown', backgroundColor:'rgba(75,96,112,0.5)', borderWidth:0, borderRadius:2,
-    data: phases.map(ph => fil.filter(d=>d.phase===ph&&d.dx==='UNK').length) });
-  charts['phase'] = new Chart(document.getElementById('cPhase'), {
-    type:'bar', data:{ labels: phases.map(p=>`Phase ${p}`), datasets },
-    options:{ responsive:true, plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:10, font:{size:11} }}},
-      scales:{ x:{ stacked:true, grid:{ display:false }}, y:{ stacked:true, grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true }}}
-  });
+function rPhase(fil){
+  dc('phase');const phases=[1,2,3,4];
+  const datasets=DX_ORDER.filter(k=>k!=='UNK').map(k=>({label:DX_INFO[k].name,backgroundColor:DX_INFO[k].colorA,borderWidth:0,borderRadius:2,data:phases.map(ph=>fil.filter(d=>d.phase===ph&&d.dx===k).length)}));
+  datasets.push({label:'Unknown',backgroundColor:'rgba(75,96,112,0.5)',borderWidth:0,borderRadius:2,data:phases.map(ph=>fil.filter(d=>d.phase===ph&&d.dx==='UNK').length)});
+  charts['phase']=new Chart(document.getElementById('cPhase'),{type:'bar',data:{labels:phases.map(p=>`Phase ${p}`),datasets},
+    options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12,padding:10,font:{size:11}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'rgba(13,33,55,0.05)'},beginAtZero:true}}}});
 }
 
-function rDx(u) {
-  dc('dx');
-  const counts = {};
-  u.forEach(d => { counts[d.dx] = (counts[d.dx]||0) + 1; });
-  const entries = DX_ORDER.filter(k => counts[k]).map(k => [k, counts[k]]);
-  charts['dx'] = new Chart(document.getElementById('cDx'), {
-    type:'doughnut',
-    data:{ labels: entries.map(e=>DX_INFO[e[0]].name), datasets:[{ data: entries.map(e=>e[1]), backgroundColor: entries.map(e=>DX_INFO[e[0]].colorA), borderColor: entries.map(e=>DX_INFO[e[0]].color), borderWidth:2, hoverOffset:6 }]},
-    options:{ responsive:true, cutout:'60%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, padding:10, font:{size:11} }}, tooltip:{ callbacks:{ label: i => ` ${i.label}: ${i.raw} (${pct(i.raw,u.length)}%)` }}}}
-  });
+function rDx(u){
+  dc('dx');const counts={};u.forEach(d=>{counts[d.dx]=(counts[d.dx]||0)+1;});
+  const entries=DX_ORDER.filter(k=>counts[k]).map(k=>[k,counts[k]]);
+  charts['dx']=new Chart(document.getElementById('cDx'),{type:'doughnut',data:{labels:entries.map(e=>DX_INFO[e[0]].name),datasets:[{data:entries.map(e=>e[1]),backgroundColor:entries.map(e=>DX_INFO[e[0]].colorA),borderColor:entries.map(e=>DX_INFO[e[0]].color),borderWidth:2,hoverOffset:6}]},
+    options:{responsive:true,cutout:'60%',plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:10,font:{size:11}}},tooltip:{callbacks:{label:i=>` ${i.label}: ${i.raw} (${pct(i.raw,u.length)}%)`}}}}});
 }
 
-function rDxBar(u) {
-  dc('dxbar');
-  const counts = {};
-  DX_ORDER.forEach(k => { counts[k] = 0; });
-  u.forEach(d => { if (counts[d.dx] !== undefined) counts[d.dx]++; });
-  const entries = DX_ORDER.filter(k => counts[k] > 0);
-  const total   = u.length || 1;
-  charts['dxbar'] = new Chart(document.getElementById('cDxBar'), {
-    type:'bar',
-    data:{ labels: entries.map(k=>DX_INFO[k].name), datasets:[{ label:'Participants', data: entries.map(k=>counts[k]), backgroundColor: entries.map(k=>DX_INFO[k].colorA), borderColor: entries.map(k=>DX_INFO[k].color), borderWidth:2, borderRadius:4 }]},
-    options:{ responsive:true, indexAxis:'y',
-      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label: i => ` Count: ${i.raw}`, afterLabel: i => ` Percentage: ${pct(i.raw, total)}%` }}},
-      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true, title:{ display:true, text:'Number of unique participants', color:'#6b8299' }}, y:{ grid:{ display:false }}}}
-  });
+function rDxBar(u){
+  dc('dxbar');const counts={};DX_ORDER.forEach(k=>{counts[k]=0;});u.forEach(d=>{if(counts[d.dx]!==undefined)counts[d.dx]++;});
+  const entries=DX_ORDER.filter(k=>counts[k]>0);const total=u.length||1;
+  charts['dxbar']=new Chart(document.getElementById('cDxBar'),{type:'bar',data:{labels:entries.map(k=>DX_INFO[k].name),datasets:[{label:'Participants',data:entries.map(k=>counts[k]),backgroundColor:entries.map(k=>DX_INFO[k].colorA),borderColor:entries.map(k=>DX_INFO[k].color),borderWidth:2,borderRadius:4}]},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>` Count: ${i.raw}`,afterLabel:i=>` Percentage: ${pct(i.raw,total)}%`}}},scales:{x:{grid:{color:'rgba(13,33,55,0.05)'},beginAtZero:true,title:{display:true,text:'Number of unique participants',color:'#6b8299'}},y:{grid:{display:false}}}}});
 }
 
-function rCap(data) {
-  dc('cap');
-  const cd = data.filter(d => d.hc !== null && !isNaN(d.hc) && d.hc > 0);
-  if (!cd.length) return;
-
-  const bk = {};
-  cd.forEach(d => {
-    const k = (Math.round(d.hc * 2) / 2).toFixed(1);
-    bk[k] = (bk[k]||0) + 1;
-  });
-
-  const sorted      = Object.entries(bk).sort((a,b) => parseFloat(a[0]) - parseFloat(b[0]));
-  const labels      = sorted.map(e => e[0] + ' cm');
-  const values      = sorted.map(e => e[1]);
-  const keys        = sorted.map(e => parseFloat(e[0]));
-  const bgColors    = keys.map((k,i) => k > 61 ? 'rgba(180,83,9,0.75)' : `hsla(${195 + i*1.5},55%,38%,0.82)`);
-  const borderColors = keys.map(k => k > 61 ? '#b45309' : '#0e7490');
-
-  charts['cap'] = new Chart(document.getElementById('cCap'), {
-    type:'bar',
-    data:{ labels, datasets:[{ label:'Visits', data:values, backgroundColor:bgColors, borderColor:borderColors, borderWidth:1, borderRadius:3 }]},
-    options:{ responsive:true,
-      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{
-        title: i => `HC: ${i[0].label}`,
-        label: i => `Count: ${i.raw} visit${i.raw!==1?'s':''}`,
-        afterLabel: i => parseFloat(i.label) > 61 ? '⚠ Excluded from HC-based stats' : ''
-      }}},
-      scales:{ x:{ grid:{ display:false }, ticks:{ maxRotation:60, font:{size:10} }}, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true, title:{ display:true, text:'Frequency (visits)', color:'#6b8299' }}}}
-  });
+function rCap(data){
+  dc('cap');const cd=data.filter(d=>d.hc!==null&&!isNaN(d.hc)&&d.hc>0);if(!cd.length)return;
+  const bk={};cd.forEach(d=>{const k=(Math.round(d.hc*2)/2).toFixed(1);bk[k]=(bk[k]||0)+1;});
+  const sorted=Object.entries(bk).sort((a,b)=>parseFloat(a[0])-parseFloat(b[0]));
+  const labels=sorted.map(e=>e[0]+' cm'),values=sorted.map(e=>e[1]),keys=sorted.map(e=>parseFloat(e[0]));
+  const bgColors=keys.map((k,i)=>k>61?'rgba(180,83,9,0.75)':`hsla(${195+i*1.5},55%,38%,0.82)`);
+  const borderColors=keys.map(k=>k>61?'#b45309':'#0e7490');
+  charts['cap']=new Chart(document.getElementById('cCap'),{type:'bar',data:{labels,datasets:[{label:'Visits',data:values,backgroundColor:bgColors,borderColor:borderColors,borderWidth:1,borderRadius:3}]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`HC: ${i[0].label}`,label:i=>`Count: ${i.raw} visit${i.raw!==1?'s':''}`,afterLabel:i=>parseFloat(i.label)>61?'⚠ Excluded from HC-based stats':''}}},
+    scales:{x:{grid:{display:false},ticks:{maxRotation:60,font:{size:10}}},y:{grid:{color:'rgba(13,33,55,0.05)'},beginAtZero:true,title:{display:true,text:'Frequency (visits)',color:'#6b8299'}}}}});
 }
 
-/* 
-  Cap type chart — UNIQUE participants.
-  Uses the full filtered dataset to find, per unique pid,
-  which cap(s) they used across any visit.
-  129-ch (col 128 = 1) vs 32-ch (col 128 = 0).
-  Participants who used BOTH are shown in a third "Both" slice.
-*/
-function r128(fil) {
-  dc('128');
+function r128(fil){
+  dc('128');const capData=uniqPCapType(fil);const n129=capData['129'],n32=capData['32'],nBoth=capData.both,total=n129+n32+nBoth;
+  const summaryEl=document.getElementById('cap-summary');
+  if(total===0){summaryEl.innerHTML='<span style="font-size:12px;color:var(--text-muted);font-family:IBM Plex Mono,monospace;">No cap type data available for mapped "128" column.</span>';return;}
+  summaryEl.innerHTML=`<div class="cap-pill"><div class="cap-pill-dot" style="background:#007a7c"></div><div><div class="cap-pill-val">${n129}</div><div class="cap-pill-label">129-ch cap</div></div><div class="cap-pill-pct">${pct(n129,total)}%</div></div>
+    <div class="cap-pill"><div class="cap-pill-dot" style="background:#6d28d9"></div><div><div class="cap-pill-val">${n32}</div><div class="cap-pill-label">32-ch cap</div></div><div class="cap-pill-pct">${pct(n32,total)}%</div></div>
+    ${nBoth>0?`<div class="cap-pill"><div class="cap-pill-dot" style="background:#b45309"></div><div><div class="cap-pill-val">${nBoth}</div><div class="cap-pill-label">Used both</div></div><div class="cap-pill-pct">${pct(nBoth,total)}%</div></div>`:''}`;
+  const labels=nBoth>0?['129-ch Cap','32-ch Cap','Both Caps']:['129-ch Cap','32-ch Cap'];
+  const dataVals=nBoth>0?[n129,n32,nBoth]:[n129,n32];
+  const bgColors=nBoth>0?['rgba(0,122,124,0.82)','rgba(109,40,217,0.82)','rgba(180,83,9,0.75)']:['rgba(0,122,124,0.82)','rgba(109,40,217,0.82)'];
+  const bdColors=nBoth>0?['#007a7c','#6d28d9','#b45309']:['#007a7c','#6d28d9'];
+  charts['128']=new Chart(document.getElementById('c128'),{type:'doughnut',data:{labels,datasets:[{data:dataVals,backgroundColor:bgColors,borderColor:bdColors,borderWidth:2,hoverOffset:6}]},
+    options:{responsive:true,cutout:'62%',plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:14}},tooltip:{callbacks:{label:i=>` ${i.label}: ${i.raw} (${pct(i.raw,total)}%)`}}}}});
+}
 
-  const capData  = uniqPCapType(fil);
-  const n129     = capData['129'];
-  const n32      = capData['32'];
-  const nBoth    = capData.both;
-  const total    = n129 + n32 + nBoth;
+function rSeasonal(fil){
+  dc('seas');const dd=fil.filter(d=>d.month!==null&&d.year!==null&&d.year>=2017);
+  const datasets=DX_ORDER.filter(k=>k!=='UNK').map(k=>{
+    const monthly=new Array(12).fill(0);dd.forEach(d=>{if(d.dx===k)monthly[d.month]++;});
+    return{label:DX_INFO[k].name,data:monthly,borderColor:DX_INFO[k].color,backgroundColor:DX_INFO[k].color+'18',tension:0.4,fill:false,pointRadius:4,pointHoverRadius:7,pointBackgroundColor:DX_INFO[k].color,borderWidth:2};
+  });
+  charts['seas']=new Chart(document.getElementById('cSeasonal'),{type:'line',data:{labels:MN,datasets},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:10,font:{size:11}}},tooltip:{callbacks:{afterBody:items=>[`Total: ${items.reduce((s,i)=>s+i.raw,0)}`]}}},
+    scales:{x:{grid:{color:'rgba(13,33,55,0.05)'}},y:{grid:{color:'rgba(13,33,55,0.05)'},beginAtZero:true}}}});
+}
 
-  // Summary pills
-  const summaryEl = document.getElementById('cap-summary');
-  if (total === 0) {
-    summaryEl.innerHTML = '<span style="font-size:12px;color:var(--text-muted);font-family:IBM Plex Mono,monospace;">No cap type data available for mapped "128" column.</span>';
-    return;
+function rPyramid(u){
+  dc('pyr');const labels=BUCKETS.map(b=>b[2]);const mD=[],fD=[];
+  BUCKETS.forEach(([lo,hi])=>{const g=u.filter(d=>d.age!==null&&d.age>=lo&&d.age<hi);mD.push(g.filter(d=>d.sex==='M').length);fD.push(-g.filter(d=>d.sex==='F').length);});
+  charts['pyr']=new Chart(document.getElementById('cPyramid'),{type:'bar',data:{labels,datasets:[
+    {label:'Male',data:mD,backgroundColor:'rgba(26,111,168,0.82)',borderColor:'#1a6fa8',borderWidth:1,borderRadius:2},
+    {label:'Female',data:fD,backgroundColor:'rgba(181,68,110,0.82)',borderColor:'#b5446e',borderWidth:1,borderRadius:2},
+  ]},options:{responsive:true,indexAxis:'y',plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14}},tooltip:{callbacks:{label:item=>{const v=Math.abs(item.raw),i=labels.indexOf(item.label);const tot=mD[i]+Math.abs(fD[i]);return` ${item.dataset.label}: ${v} (${pct(v,tot)}%)`;}}},},
+    scales:{x:{grid:{color:'rgba(13,33,55,0.05)'},ticks:{callback:v=>Math.abs(v)}},y:{grid:{display:false}}},onClick:(_,els)=>{if(els.length)drillAge(labels[els[0].index],u);}}});
+}
+
+// ========== PAGE 2: LAST MONTH ==========
+function renderLastMonth(){
+  const val = document.getElementById('lm-month-input').value;
+  if(!val || !rawData.length){ document.getElementById('cohort-grid').innerHTML='<div class="no-data-msg" style="grid-column:span 3">No data loaded.</div>'; return; }
+  const [yr,mo]=val.split('-').map(Number);
+  document.getElementById('lm-sub-text').textContent=`Participants seen in ${MN[mo-1]} ${yr} — broken down by cohort / diagnosis`;
+
+  // Filter to this month
+  const monthData = rawData.filter(d => d.year===yr && d.month===(mo-1));
+  const allPidsEver = new Set(rawData.filter(d=>{
+    const dt=d.dateObj;return dt&&(dt.getFullYear()<yr||(dt.getFullYear()===yr&&dt.getMonth()<(mo-1)));
+  }).map(d=>d.pid));
+
+  const uMonth = uniqP(monthData);
+  const newParts = uMonth.filter(d => !allPidsEver.has(d.pid));
+  const retParts = uMonth.filter(d => allPidsEver.has(d.pid));
+  const activeDx = [...new Set(monthData.map(d=>d.dx))].filter(k=>k);
+
+  // Update KPIs
+  document.getElementById('lm-k-total').textContent = uMonth.length || 0;
+  document.getElementById('lm-k-new').textContent   = newParts.length;
+  document.getElementById('lm-k-return').textContent= retParts.length;
+  document.getElementById('lm-k-cohorts').textContent= activeDx.filter(k=>k!=='UNK').length;
+  document.getElementById('lm-tab-badge').textContent= uMonth.length||0;
+
+  if(!monthData.length){
+    document.getElementById('cohort-grid').innerHTML='<div class="no-data-msg" style="grid-column:span 3">No assessments recorded in this month.</div>';
+    dc('lmDx');dc('lmPhase');return;
   }
 
-  summaryEl.innerHTML = `
-    <div class="cap-pill">
-      <div class="cap-pill-dot" style="background:#007a7c"></div>
-      <div>
-        <div class="cap-pill-val">${n129}</div>
-        <div class="cap-pill-label">129-ch cap</div>
-      </div>
-      <div class="cap-pill-pct">${pct(n129,total)}%</div>
-    </div>
-    <div class="cap-pill">
-      <div class="cap-pill-dot" style="background:#6d28d9"></div>
-      <div>
-        <div class="cap-pill-val">${n32}</div>
-        <div class="cap-pill-label">32-ch cap</div>
-      </div>
-      <div class="cap-pill-pct">${pct(n32,total)}%</div>
-    </div>
-    ${nBoth > 0 ? `
-    <div class="cap-pill">
-      <div class="cap-pill-dot" style="background:#b45309"></div>
-      <div>
-        <div class="cap-pill-val">${nBoth}</div>
-        <div class="cap-pill-label">Used both</div>
-      </div>
-      <div class="cap-pill-pct">${pct(nBoth,total)}%</div>
-    </div>` : ''}
-  `;
+  // Build cohort cards
+  const grid = document.getElementById('cohort-grid');
+  let html='';
+  const dxCounts={};
+  DX_ORDER.forEach(k=>{dxCounts[k]=0;});
+  monthData.forEach(d=>{if(dxCounts[d.dx]!==undefined)dxCounts[d.dx]++;});
 
-  const labels = nBoth > 0
-    ? ['129-ch Cap','32-ch Cap','Both Caps']
-    : ['129-ch Cap','32-ch Cap'];
-  const dataVals = nBoth > 0 ? [n129, n32, nBoth] : [n129, n32];
-  const bgColors = nBoth > 0
-    ? ['rgba(0,122,124,0.82)','rgba(109,40,217,0.82)','rgba(180,83,9,0.75)']
-    : ['rgba(0,122,124,0.82)','rgba(109,40,217,0.82)'];
-  const bdColors = nBoth > 0
-    ? ['#007a7c','#6d28d9','#b45309']
-    : ['#007a7c','#6d28d9'];
+  const presentDx = DX_ORDER.filter(k=>dxCounts[k]>0);
+  const totalMonth = monthData.length;
 
-  charts['128'] = new Chart(document.getElementById('c128'), {
-    type:'doughnut',
-    data:{
-      labels,
-      datasets:[{ data:dataVals, backgroundColor:bgColors, borderColor:bdColors, borderWidth:2, hoverOffset:6 }]
-    },
-    options:{
-      responsive:true,
-      cutout:'62%',
-      plugins:{
-        legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 }},
-        tooltip:{ callbacks:{ label: i => ` ${i.label}: ${i.raw} (${pct(i.raw, total)}%)` }}
+  presentDx.forEach(k=>{
+    const info=DX_INFO[k];
+    const kData=monthData.filter(d=>d.dx===k);
+    const kUniq=uniqP(kData);
+    const mC=kUniq.filter(d=>d.sex==='M').length,fC=kUniq.filter(d=>d.sex==='F').length;
+    const phases=[1,2,3,4].map(p=>({p,n:kData.filter(d=>d.phase===p).length})).filter(x=>x.n>0);
+    const pChips=phases.map(x=>`<span class="phase-chip">Ph${x.p} <span>${x.n}</span></span>`).join('');
+    html+=`<div class="cohort-card dx${k==='UNK'?'unk':k}" style="border-top-color:${info.color}">
+      <div class="cohort-code">${k==='UNK'?'???':k}</div>
+      <div class="cohort-name">${info.name}</div>
+      <div class="cohort-big" style="color:${info.color}">${dxCounts[k]}</div>
+      <div class="cohort-label">assessments · ${pct(dxCounts[k],totalMonth)}% of month</div>
+      <div class="cohort-sub-row">
+        <div class="cohort-sub"><div class="cohort-sub-val" style="color:#1a6fa8">${mC}</div><div class="cohort-sub-lbl">Male</div></div>
+        <div class="cohort-sub"><div class="cohort-sub-val" style="color:#b5446e">${fC}</div><div class="cohort-sub-lbl">Female</div></div>
+        <div class="cohort-sub"><div class="cohort-sub-val" style="color:var(--teal)">${kUniq.length}</div><div class="cohort-sub-lbl">Unique pts</div></div>
+      </div>
+      <div class="cohort-phase-row">${pChips||'<span class="phase-chip">Phase N/A</span>'}</div>
+    </div>`;
+  });
+
+  if(!html) html='<div class="no-data-msg" style="grid-column:span 3">No cohort data for this month.</div>';
+  grid.innerHTML=html;
+
+  // Charts
+  dc('lmDx');
+  const dxEntries=presentDx.map(k=>[k,dxCounts[k]]);
+  charts['lmDx']=new Chart(document.getElementById('cLmDx'),{type:'bar',data:{labels:dxEntries.map(e=>DX_INFO[e[0]].name),datasets:[{label:'Assessments',data:dxEntries.map(e=>e[1]),backgroundColor:dxEntries.map(e=>DX_INFO[e[0]].colorA),borderColor:dxEntries.map(e=>DX_INFO[e[0]].color),borderWidth:2,borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{afterLabel:i=>` (${pct(i.raw,totalMonth)}%)`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(13,33,55,0.05)'}}}}});
+
+  dc('lmPhase');
+  const phData=[1,2,3,4].map(p=>({ph:p,n:monthData.filter(d=>d.phase===p).length}));
+  const pDS=DX_ORDER.filter(k=>k!=='UNK').map(k=>({label:DX_INFO[k].name,backgroundColor:DX_INFO[k].colorA,borderWidth:0,borderRadius:2,data:[1,2,3,4].map(ph=>monthData.filter(d=>d.phase===ph&&d.dx===k).length)}));
+  charts['lmPhase']=new Chart(document.getElementById('cLmPhase'),{type:'bar',data:{labels:['Phase 1','Phase 2','Phase 3','Phase 4'],datasets:pDS},
+    options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:10,padding:8,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'rgba(13,33,55,0.05)'}}}}});
+}
+
+// ========== PAGE 3: MONTHLY STATUS ==========
+function renderMonthlyStatus(){
+  const val=document.getElementById('ms-month-input').value;
+  const phaseSel=document.getElementById('ms-phase-sel').value;
+  if(!val||!rawData.length){
+    document.getElementById('phase-status-grid').innerHTML='<div class="no-data-msg" style="grid-column:span 2">No data loaded.</div>';
+    return;
+  }
+  const [yr,mo]=val.split('-').map(Number);
+  let monthData=rawData.filter(d=>d.year===yr&&d.month===(mo-1));
+  if(phaseSel!=='all') monthData=monthData.filter(d=>String(d.phase)===phaseSel);
+
+  const total=monthData.length;
+  const nUseful   = monthData.filter(d=>d.status==='useful').length;
+  const nPrep     = monthData.filter(d=>d.status==='preprocess').length;
+  const nExcluded = monthData.filter(d=>d.status==='excluded').length;
+  const nPending  = monthData.filter(d=>d.status==='pending').length;
+
+  document.getElementById('ps-k-total').textContent   = total;
+  document.getElementById('ps-k-useful').textContent  = nUseful;
+  document.getElementById('ps-k-prep').textContent    = nPrep;
+  document.getElementById('ps-k-pend').textContent    = nPending;
+  document.getElementById('ps-k-useful-pct').textContent = total?`${pct(nUseful,total)}% of month`:'—';
+  document.getElementById('ps-k-prep-pct').textContent   = total?`${pct(nPrep,total)}% of month`:'—';
+  document.getElementById('ps-k-pend-pct').textContent   = total?`${pct(nPending,total)}% of month`:'—';
+
+  // Phase status cards
+  const phases = phaseSel==='all' ? [1,2,3,4] : [parseInt(phaseSel)];
+  let phHtml='';
+  phases.forEach(ph=>{
+    const phData=monthData.filter(d=>d.phase===ph);
+    if(!phData.length)return;
+    const phTotal=phData.length;
+    const phUseful=phData.filter(d=>d.status==='useful').length;
+    const phPrep  =phData.filter(d=>d.status==='preprocess').length;
+    const phExcl  =phData.filter(d=>d.status==='excluded').length;
+    const phPend  =phData.filter(d=>d.status==='pending').length;
+    const pctUse  =pct(phUseful,phTotal);
+
+    // Per-diagnosis breakdown
+    let dxRows='';
+    DX_ORDER.forEach(k=>{
+      const kData=phData.filter(d=>d.dx===k);
+      if(!kData.length)return;
+      const kU=kData.filter(d=>d.status==='useful').length;
+      const kP=kData.filter(d=>d.status==='preprocess').length;
+      const kE=kData.filter(d=>d.status==='excluded').length;
+      const kPend=kData.filter(d=>d.status==='pending').length;
+      const info=DX_INFO[k];
+      const barW=Math.round((kU/kData.length)*100);
+      let tag='';
+      if(kData.length>0){
+        const upct=kU/kData.length;
+        if(upct>=0.8) tag='<span class="status-tag tag-good">✓ Good</span>';
+        else if(kP>0||upct<0.5) tag='<span class="status-tag tag-warn">⚠ Needs attention</span>';
+        else tag='<span class="status-tag tag-pend">Pending review</span>';
       }
-    }
-  });
-}
+      dxRows+=`<tr>
+        <td><span class="st-dx-chip" style="background:${info.light||info.color+'18'};color:${info.color}">${info.name}</span></td>
+        <td class="st-count">${kData.length}</td>
+        <td><span style="color:var(--green-ok);font-family:'IBM Plex Mono',monospace;font-weight:500">${kU}</span>
+          <span style="font-size:10px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace"> (${pct(kU,kData.length)}%)</span></td>
+        <td><span style="color:var(--amber);font-family:'IBM Plex Mono',monospace;font-weight:500">${kP}</span></td>
+        <td><span style="color:var(--red-flag);font-family:'IBM Plex Mono',monospace;font-weight:500">${kE}</span></td>
+        <td><span style="color:var(--text-muted);font-family:'IBM Plex Mono',monospace">${kPend}</span></td>
+        <td>${tag}</td>
+      </tr>`;
+    });
 
-function rSeasonal(fil) {
-  dc('seas');
-  const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const dd = fil.filter(d => d.month !== null && d.year !== null && d.year >= 2017);
-  const datasets = DX_ORDER.filter(k=>k!=='UNK').map(k => {
-    const monthly = new Array(12).fill(0);
-    dd.forEach(d => { if (d.dx===k) monthly[d.month]++; });
-    return { label:DX_INFO[k].name, data:monthly, borderColor:DX_INFO[k].color, backgroundColor:DX_INFO[k].color+'18', tension:0.4, fill:false, pointRadius:4, pointHoverRadius:7, pointBackgroundColor:DX_INFO[k].color, borderWidth:2 };
-  });
-  charts['seas'] = new Chart(document.getElementById('cSeasonal'), {
-    type:'line', data:{ labels:MN, datasets },
-    options:{ responsive:true, interaction:{ mode:'index', intersect:false },
-      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:10, font:{size:11} }},
-        tooltip:{ callbacks:{ afterBody: items => [`Total: ${items.reduce((s,i)=>s+i.raw,0)}`] }}},
-      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }}, y:{ grid:{ color:'rgba(13,33,55,0.05)' }, beginAtZero:true }}
-    }
-  });
-}
-
-function rPyramid(u) {
-  dc('pyr');
-  const labels = BUCKETS.map(b=>b[2]);
-  const mD=[], fD=[];
-  BUCKETS.forEach(([lo,hi]) => {
-    const g = u.filter(d=>d.age!==null&&d.age>=lo&&d.age<hi);
-    mD.push(g.filter(d=>d.sex==='M').length);
-    fD.push(-g.filter(d=>d.sex==='F').length);
-  });
-  charts['pyr'] = new Chart(document.getElementById('cPyramid'), {
-    type:'bar',
-    data:{ labels, datasets:[
-      { label:'Male',   data:mD, backgroundColor:'rgba(26,111,168,0.82)', borderColor:'#1a6fa8', borderWidth:1, borderRadius:2 },
-      { label:'Female', data:fD, backgroundColor:'rgba(181,68,110,0.82)', borderColor:'#b5446e', borderWidth:1, borderRadius:2 },
-    ]},
-    options:{ responsive:true, indexAxis:'y',
-      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:14 }},
-        tooltip:{ callbacks:{ label: item => { const v=Math.abs(item.raw), i=labels.indexOf(item.label); const tot=mD[i]+Math.abs(fD[i]); return ` ${item.dataset.label}: ${v} (${pct(v,tot)}%)`; }}}},
-      scales:{ x:{ grid:{ color:'rgba(13,33,55,0.05)' }, ticks:{ callback:v=>Math.abs(v) }}, y:{ grid:{ display:false }}},
-      onClick:(_,els) => { if (els.length) drillAge(labels[els[0].index], u); }
-    }
-  });
-}
-
-function openModal(t,b){ document.getElementById('mtitle').textContent=t; document.getElementById('mbody').innerHTML=b; document.getElementById('modal').classList.add('open'); }
-function closeModal(){ document.getElementById('modal').classList.remove('open'); }
-document.getElementById('modal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeModal(); });
-
-function drillAge(label, u) {
-  const b = BUCKETS.find(b=>b[2]===label); if (!b) return;
-  const g = u.filter(d=>d.age!==null&&d.age>=b[0]&&d.age<b[1]);
-  const tot=g.length||1, m=g.filter(d=>d.sex==='M').length, f=g.filter(d=>d.sex==='F').length;
-  const dc2={};
-  g.forEach(d => { dc2[d.dx] = (dc2[d.dx]||0)+1; });
-  const maxN = Math.max(...Object.values(dc2),1);
-  const rows = DX_ORDER.filter(k=>dc2[k]).map(k => {
-    const n=dc2[k], info=DX_INFO[k];
-    return `<div class="dxrow">
-      <span class="dxname"><span class="dxdot" style="background:${info.color}"></span>${info.name}</span>
-      <div class="dxright">
-        <div class="dxbw"><div class="dxbf" style="width:${(n/maxN*100).toFixed(0)}%;background:${info.color}"></div></div>
-        <span class="dxcount">${n}</span><span class="dxpct">(${pct(n,tot)}%)</span>
+    phHtml+=`<div class="phase-status-card">
+      <div class="psc-header">
+        <div class="psc-title"><span class="psc-phase-badge">Phase ${ph}</span> Status Overview</div>
+        <div class="psc-total">${phTotal} assessments · ${pctUse}% useful</div>
+      </div>
+      <div class="psc-body">
+        <div class="status-legend">
+          <div class="sl-item"><div class="sl-dot" style="background:var(--green-ok)"></div>Useful: <strong>${phUseful}</strong></div>
+          <div class="sl-item"><div class="sl-dot" style="background:var(--amber)"></div>Preprocess: <strong>${phPrep}</strong></div>
+          <div class="sl-item"><div class="sl-dot" style="background:var(--red-flag)"></div>Excluded: <strong>${phExcl}</strong></div>
+          <div class="sl-item"><div class="sl-dot" style="background:var(--text-muted)"></div>Pending: <strong>${phPend}</strong></div>
+        </div>
+        <table class="status-table">
+          <thead><tr><th>Cohort</th><th>Total</th><th>Useful</th><th>Preprocess</th><th>Excluded</th><th>Pending</th><th>Status</th></tr></thead>
+          <tbody>${dxRows||`<tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:12px">No assessments with mapped status data for Phase ${ph}.</td></tr>`}</tbody>
+        </table>
       </div>
     </div>`;
-  }).join('');
-  openModal(`Age Group: ${label}`, `
-    <div class="kpi-row">
-      <div class="kpi"><div class="kv" style="color:var(--teal)">${g.length}</div><div class="kl">Total Participants</div></div>
-      <div class="kpi"><div class="kv" style="color:#1a6fa8">${m} <span style="font-size:14px;font-weight:400">(${pct(m,tot)}%)</span></div><div class="kl">Male</div></div>
-      <div class="kpi"><div class="kv" style="color:#b5446e">${f} <span style="font-size:14px;font-weight:400">(${pct(f,tot)}%)</span></div><div class="kl">Female</div></div>
-    </div>
-    <div class="dl">Clinical Indications / Diagnosis</div>
-    ${rows || '<p style="color:var(--text-muted);font-size:13px">No diagnosis data for this age group.</p>'}`);
+  });
+
+  document.getElementById('phase-status-grid').innerHTML = phHtml || '<div class="no-data-msg" style="grid-column:span 2">No assessments found for this month/phase selection.</div>';
+
+  // Status by diagnosis chart
+  dc('msDx');
+  const dxPresent=DX_ORDER.filter(k=>monthData.some(d=>d.dx===k));
+  const usefulDS ={label:'Useful',      backgroundColor:'rgba(22,163,74,0.82)',  borderWidth:0,borderRadius:2,data:dxPresent.map(k=>monthData.filter(d=>d.dx===k&&d.status==='useful').length)};
+  const prepDS   ={label:'Preprocess',  backgroundColor:'rgba(217,119,6,0.82)',  borderWidth:0,borderRadius:2,data:dxPresent.map(k=>monthData.filter(d=>d.dx===k&&d.status==='preprocess').length)};
+  const exclDS   ={label:'Excluded',    backgroundColor:'rgba(220,38,38,0.7)',   borderWidth:0,borderRadius:2,data:dxPresent.map(k=>monthData.filter(d=>d.dx===k&&d.status==='excluded').length)};
+  const pendDS   ={label:'Pending',     backgroundColor:'rgba(107,130,153,0.5)', borderWidth:0,borderRadius:2,data:dxPresent.map(k=>monthData.filter(d=>d.dx===k&&d.status==='pending').length)};
+  charts['msDx']=new Chart(document.getElementById('cMsDx'),{type:'bar',data:{labels:dxPresent.map(k=>DX_INFO[k].name),datasets:[usefulDS,prepDS,exclDS,pendDS]},
+    options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:10,padding:8,font:{size:11}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'rgba(13,33,55,0.05)'}}}}});
+
+  // Trend: last 12 months useful % per month
+  dc('msTrend');
+  const trendMonths=[];const trendPcts=[];const trendCounts=[];
+  for(let i=11;i>=0;i--){
+    const d=new Date(yr,mo-1-i,1);
+    const label=`${MN[d.getMonth()]} ${d.getFullYear().toString().slice(2)}`;
+    const mD=rawData.filter(x=>x.year===d.getFullYear()&&x.month===d.getMonth());
+    const mUseful=mD.filter(x=>x.status==='useful').length;
+    const mTotal=mD.length;
+    trendMonths.push(label);
+    trendPcts.push(mTotal?parseFloat(pct(mUseful,mTotal)):null);
+    trendCounts.push(mTotal);
+  }
+  charts['msTrend']=new Chart(document.getElementById('cMsTrend'),{type:'line',data:{labels:trendMonths,datasets:[
+    {label:'Useful %',data:trendPcts,borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,0.1)',tension:0.4,fill:true,pointRadius:4,pointHoverRadius:7,pointBackgroundColor:'#16a34a',borderWidth:2,yAxisID:'y'},
+    {label:'Total assessments',data:trendCounts,borderColor:'rgba(26,111,168,0.5)',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:3,borderWidth:1.5,yAxisID:'y2',borderDash:[4,4]},
+  ]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:10,padding:10,font:{size:11}}}},
+    scales:{y:{beginAtZero:true,max:100,grid:{color:'rgba(13,33,55,0.05)'},title:{display:true,text:'Useful %',color:'#6b8299'},ticks:{callback:v=>v+'%'}},
+      y2:{beginAtZero:true,position:'right',grid:{display:false},title:{display:true,text:'Assessments',color:'#6b8299'}},
+      x:{grid:{display:false}}}}});
+
+  // Flags
+  const flags=[];
+  if(total===0){
+    flags.push({type:'info',icon:'ℹ️',text:'No assessments recorded for this month and phase selection.'});
+  } else {
+    const usePct=total?nUseful/total:0;
+    const prepPct=total?nPrep/total:0;
+    const pendPct=total?nPending/total:0;
+    if(usePct>=0.8) flags.push({type:'ok',icon:'✅',text:`<strong>${pct(nUseful,total)}% useful data</strong> — Strong month. Most assessments are analysis-ready.`});
+    else if(usePct<0.5) flags.push({type:'warn',icon:'⚠️',text:`<strong>Only ${pct(nUseful,total)}% useful data</strong> — Below target. Consider reviewing preprocessing backlog (${nPrep} records flagged).`});
+    if(prepPct>0.3) flags.push({type:'warn',icon:'🔧',text:`<strong>${nPrep} assessments need preprocessing</strong> (${pct(nPrep,total)}%). High preprocessing load — prioritize pipeline.`});
+    if(nExcluded>0) flags.push({type:'warn',icon:'🚫',text:`<strong>${nExcluded} assessments excluded</strong> — Review rejection reasons; check data collection protocol.`});
+    if(pendPct>0.5) flags.push({type:'info',icon:'🕐',text:`<strong>${nPending} assessments still pending status review</strong> (${pct(nPending,total)}%). Update status column for accurate tracking.`});
+    if(!colMap.status) flags.push({type:'info',icon:'ℹ️',text:'<strong>No Status column mapped.</strong> Map a status/quality column in the column mapper to enable preprocessing tracking. All records show as "Pending".'});
+    if(flags.length===0) flags.push({type:'ok',icon:'✅',text:'All metrics look healthy for this month.'});
+  }
+  document.getElementById('ms-flag-rows').innerHTML=flags.map(f=>`<div class="flag-row ${f.type}"><span class="flag-icon">${f.icon}</span><div class="flag-text">${f.text}</div></div>`).join('');
 }
 
-function drillSex() {
-  const fil=filt(rawData), u=uniqP(fil);
-  const m=u.filter(d=>d.sex==='M'), f=u.filter(d=>d.sex==='F'), tot=u.length||1;
-  const avg = arr => { const a=arr.map(d=>d.age).filter(Boolean); return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):'—'; };
-  const rows=[1,2,3,4].map(ph=>{
-    const pm=u.filter(d=>d.phase===ph&&d.sex==='M').length;
-    const pf=u.filter(d=>d.phase===ph&&d.sex==='F').length;
-    return `<tr><td>Phase ${ph}</td><td><span class="chip m">${pm}</span></td><td><span class="chip f">${pf}</span></td><td>${pm+pf}</td><td style="color:var(--text-muted);font-family:'IBM Plex Mono',monospace">${pm+pf?pct(pm,pm+pf):'—'}% M</td></tr>`;
+// ========== MODALS (overview drills) ==========
+function openModal(t,b){document.getElementById('mtitle').textContent=t;document.getElementById('mbody').innerHTML=b;document.getElementById('modal').classList.add('open');}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+function drillAge(label,u){
+  const b=BUCKETS.find(b=>b[2]===label);if(!b)return;
+  const g=u.filter(d=>d.age!==null&&d.age>=b[0]&&d.age<b[1]);
+  const tot=g.length||1,m=g.filter(d=>d.sex==='M').length,f=g.filter(d=>d.sex==='F').length;
+  const dc2={};g.forEach(d=>{dc2[d.dx]=(dc2[d.dx]||0)+1;});
+  const maxN=Math.max(...Object.values(dc2),1);
+  const rows=DX_ORDER.filter(k=>dc2[k]).map(k=>{const n=dc2[k],info=DX_INFO[k];
+    return`<div class="dxrow"><span class="dxname"><span class="dxdot" style="background:${info.color}"></span>${info.name}</span>
+      <div class="dxright"><div class="dxbw"><div class="dxbf" style="width:${(n/maxN*100).toFixed(0)}%;background:${info.color}"></div></div>
+      <span class="dxcount">${n}</span><span class="dxpct">(${pct(n,tot)}%)</span></div></div>`;
   }).join('');
-  openModal('Sex Distribution Detail', `
-    <div class="kpi-row">
-      <div class="kpi"><div class="kv" style="color:#1a6fa8">${m.length} <span style="font-size:14px;font-weight:400">(${pct(m.length,tot)}%)</span></div><div class="kl">Male · Avg age ${avg(m)}</div></div>
-      <div class="kpi"><div class="kv" style="color:#b5446e">${f.length} <span style="font-size:14px;font-weight:400">(${pct(f.length,tot)}%)</span></div><div class="kl">Female · Avg age ${avg(f)}</div></div>
-      <div class="kpi"><div class="kv" style="color:var(--text-muted)">${tot-m.length-f.length}</div><div class="kl">Unknown</div></div>
-    </div>
+  openModal(`Age Group: ${label}`,`<div class="kpi-row"><div class="kpi"><div class="kv" style="color:var(--teal)">${g.length}</div><div class="kl">Total Participants</div></div>
+    <div class="kpi"><div class="kv" style="color:#1a6fa8">${m} <span style="font-size:14px;font-weight:400">(${pct(m,tot)}%)</span></div><div class="kl">Male</div></div>
+    <div class="kpi"><div class="kv" style="color:#b5446e">${f} <span style="font-size:14px;font-weight:400">(${pct(f,tot)}%)</span></div><div class="kl">Female</div></div></div>
+    <div class="dl">Clinical Indications / Diagnosis</div>
+    ${rows||'<p style="color:var(--text-muted);font-size:13px">No diagnosis data for this age group.</p>'}`);
+}
+
+function drillSex(){
+  const fil=filt(rawData),u=uniqP(fil);
+  const m=u.filter(d=>d.sex==='M'),f=u.filter(d=>d.sex==='F'),tot=u.length||1;
+  const avg=arr=>{const a=arr.map(d=>d.age).filter(Boolean);return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):'—';};
+  const rows=[1,2,3,4].map(ph=>{const pm=u.filter(d=>d.phase===ph&&d.sex==='M').length,pf=u.filter(d=>d.phase===ph&&d.sex==='F').length;
+    return`<tr><td>Phase ${ph}</td><td><span class="chip m">${pm}</span></td><td><span class="chip f">${pf}</span></td><td>${pm+pf}</td><td style="color:var(--text-muted);font-family:'IBM Plex Mono',monospace">${pm+pf?pct(pm,pm+pf):'—'}% M</td></tr>`;
+  }).join('');
+  openModal('Sex Distribution Detail',`<div class="kpi-row">
+    <div class="kpi"><div class="kv" style="color:#1a6fa8">${m.length} <span style="font-size:14px;font-weight:400">(${pct(m.length,tot)}%)</span></div><div class="kl">Male · Avg age ${avg(m)}</div></div>
+    <div class="kpi"><div class="kv" style="color:#b5446e">${f.length} <span style="font-size:14px;font-weight:400">(${pct(f.length,tot)}%)</span></div><div class="kl">Female · Avg age ${avg(f)}</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--text-muted)">${tot-m.length-f.length}</div><div class="kl">Unknown</div></div></div>
     <div class="dl">Phase Breakdown by Sex</div>
     <table class="ptable"><tr><th>Phase</th><th>Male</th><th>Female</th><th>Total</th><th>Ratio</th></tr>${rows}</table>`);
 }
 
-document.querySelectorAll('[data-f]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const ft=btn.dataset.f, fv=btn.dataset.v;
-    AF[ft]=fv;
+// ========== FILTER BUTTONS ==========
+document.querySelectorAll('[data-f]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const ft=btn.dataset.f,fv=btn.dataset.v;AF[ft]=fv;
     document.querySelectorAll(`[data-f="${ft}"]`).forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    if (rawData.length) renderAll();
+    if(rawData.length)renderAll();
   });
 });
-document.getElementById('yr-sel').addEventListener('change', e => { AF.year=e.target.value; if(rawData.length) renderAll(); });
+document.getElementById('yr-sel').addEventListener('change',e=>{AF.year=e.target.value;if(rawData.length)renderAll();});
+document.getElementById('lm-month-input').addEventListener('change',()=>{if(rawData.length)renderLastMonth();});
+document.getElementById('ms-month-input').addEventListener('change',()=>{if(rawData.length)renderMonthlyStatus();});
+document.getElementById('ms-phase-sel').addEventListener('change',()=>{if(rawData.length)renderMonthlyStatus();});
 </script>
 </body>
 </html>
